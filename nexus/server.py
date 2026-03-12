@@ -11754,6 +11754,16 @@ async def webhook_form_submit(request: Request):
             lead_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
             conn.close()
 
+            # Trigger lead pipeline for auto-contact (new website leads)
+            try:
+                from core.lead_pipeline import get_pipeline
+                pipeline = get_pipeline()
+                if pipeline:
+                    import asyncio
+                    asyncio.ensure_future(pipeline.process_new_lead(lead_id))
+            except Exception:
+                pass  # Pipeline trigger is best-effort; lead is already saved
+
             # Log to brain
             from agents.shared_brain import SharedBrain
             brain = SharedBrain("website")

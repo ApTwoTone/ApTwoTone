@@ -1301,6 +1301,19 @@ def _migrate_037_task_board_extensions(conn):
     _add_column(conn, "task_board", "complexity", "INTEGER", 3)
 
 
+def _migrate_038_requires_manual_approval_column(conn):
+    """Ensure requires_manual_approval column exists with DEFAULT 1.
+    Backfill: set to 0 for leads from trusted ad/form sources that were
+    incorrectly defaulting to 1."""
+    _add_column(conn, "leads", "requires_manual_approval", "INTEGER", 1)
+    # Backfill: Facebook ad and website form leads should be auto-contactable
+    conn.execute(
+        "UPDATE leads SET requires_manual_approval = 0 "
+        "WHERE requires_manual_approval = 1 "
+        "AND LOWER(source) IN ('facebook_ad', 'facebook_lead_ad', 'website', 'website_form')"
+    )
+
+
 MIGRATIONS = [
     (1, "Add CRM columns to leads", _migrate_001_crm_columns),
     (2, "Add actor/metadata to lead_events", _migrate_002_event_metadata),
@@ -1339,6 +1352,7 @@ MIGRATIONS = [
     (35, "Agent coordination sessions table", _migrate_035_agent_sessions),
     (36, "Shared task board for cross-agent goals", _migrate_036_task_board),
     (37, "Add task_type and complexity to task_board", _migrate_037_task_board_extensions),
+    (38, "Add requires_manual_approval column + backfill for ad/form leads", _migrate_038_requires_manual_approval_column),
 ]
 
 

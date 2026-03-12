@@ -155,21 +155,29 @@ class LeadService:
         lead_uuid = incoming_uuid or uuid.uuid4().hex
         ghl_id = data.get("ghl_contact_id", "") or lead_uuid  # unique fallback
 
+        # New leads from trusted ad/form sources get auto-contacted (Rule #0 safe).
+        # Pre-existing contacts and unknown sources require Kai's Telegram approval.
+        _auto_sources = {
+            "facebook_ad", "facebook_lead_ad", "website", "website_form",
+        }
+        source_val = (data.get("source", "") or "").lower()
+        requires_approval = 0 if source_val in _auto_sources else 1
+
         conn = self._conn()
         conn.execute(
             """INSERT INTO leads (lead_uuid, ghl_contact_id, first_name, last_name, full_name, email, phone,
-               carrier, source, booking_status, status,
+               carrier, source, booking_status, status, requires_manual_approval,
                ad_id, ad_set_id, campaign_id,
                utm_source, utm_medium, utm_campaign, utm_content, utm_term,
                form_id, form_name,
                event_date, event_start_time, event_end_time,
                event_city, event_address, guest_count, event_type,
                terrain_notes, power_water_notes, notes)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 lead_uuid, ghl_id, first, last, full, email, phone,
                 data.get("carrier", "tmobile"), data.get("source", "manual"),
-                "new_lead", "new",
+                "new_lead", "new", requires_approval,
                 data.get("ad_id", ""), data.get("ad_set_id", ""), data.get("campaign_id", ""),
                 data.get("utm_source", ""), data.get("utm_medium", ""),
                 data.get("utm_campaign", ""), data.get("utm_content", ""), data.get("utm_term", ""),

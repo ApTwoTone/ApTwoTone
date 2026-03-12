@@ -1047,13 +1047,14 @@ async def run_ad_monitor(send_fn):
             if poll_key not in _sent_today:
                 _sent_today.add(poll_key)
                 try:
-                    from core.meta_ads import MetaAdsManager
+                    from core.fb_lead_sync import load_config as _fb_config, get_page_token, get_lead_forms as _fb_get_forms, get_form_leads as _fb_get_form_leads, parse_fb_lead
                     from core.services import get_lead_service
                     from core.lead_pipeline import get_pipeline
-                    mgr = MetaAdsManager()
+                    _fb_cfg = _fb_config()
+                    _fb_token = get_page_token(_fb_cfg)
                     lead_svc = get_lead_service()
                     pipeline = get_pipeline()
-                    forms = mgr.get_lead_forms()
+                    forms = _fb_get_forms(_fb_cfg.get("fb_page_id", ""), _fb_token)
                     new_leads = 0
                     for form in forms:
                         if "error" in form or form.get("status") != "ACTIVE":
@@ -1061,7 +1062,8 @@ async def run_ad_monitor(send_fn):
                         # Get leads from last 2 days to catch any webhook misses
                         from datetime import timedelta
                         since = (now_pt - timedelta(days=2)).strftime("%Y-%m-%d")
-                        leads = mgr.get_leads(form["id"], since=since)
+                        leads = _fb_get_form_leads(form["id"], _fb_token)
+                        form_name = form.get("name", "Unknown Form")
                         for lead in leads:
                             if "error" in lead:
                                 continue
@@ -1069,29 +1071,22 @@ async def run_ad_monitor(send_fn):
                             leadgen_id = lead.get("id", "")
                             if not leadgen_id:
                                 continue
-                            fields = lead.get("fields", {}) or {}
-                            full_name = (fields.get("full_name", "") or "").strip()
-                            first_name = (fields.get("first_name", "") or "").strip()
-                            last_name = (fields.get("last_name", "") or "").strip()
-                            if full_name and not first_name:
-                                parts = full_name.split()
-                                first_name = parts[0] if parts else ""
-                                last_name = " ".join(parts[1:]) if len(parts) > 1 else last_name
+                            parsed = parse_fb_lead(lead, form_name)
 
                             payload = {
-                                "lead_uuid": leadgen_id,
-                                "first_name": first_name,
-                                "last_name": last_name,
-                                "full_name": full_name,
-                                "phone": fields.get("phone_number", fields.get("phone", "")),
-                                "email": fields.get("email", ""),
+                                "lead_uuid": parsed["lead_uuid"],
+                                "first_name": parsed["first_name"],
+                                "last_name": parsed["last_name"],
+                                "full_name": parsed["full_name"],
+                                "phone": parsed["phone"],
+                                "email": parsed["email"],
                                 "source": "facebook_ad",
                                 "source_detail": "Facebook Lead Form Poll Fallback",
                                 "form_id": form["id"],
-                                "event_type": fields.get("event_type", fields.get("what_type_of_event?", "")),
-                                "event_date": fields.get("event_date", fields.get("preferred_date", "")),
-                                "event_city": fields.get("city", fields.get("event_city", "")),
-                                "guest_count": fields.get("guest_count", fields.get("number_of_guests", 0)),
+                                "event_type": parsed["event_type"],
+                                "event_date": parsed["event_date"],
+                                "event_city": parsed["event_city"],
+                                "guest_count": parsed["guest_count"],
                                 "date_added": lead.get("created_time", ""),
                             }
 
