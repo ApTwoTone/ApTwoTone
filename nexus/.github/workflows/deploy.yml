@@ -1,0 +1,33 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate syntax
+        run: |
+          python -m py_compile server.py
+          python -m py_compile telegram/bot.py
+          echo "All syntax checks passed — deploy ready"
+
+      - name: Notify deploy ready
+        env:
+          DEPLOY_WEBHOOK: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+        run: |
+          if [ -n "$DEPLOY_WEBHOOK" ]; then
+            curl -s -X POST "$DEPLOY_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d '{"event":"deploy","repo":"nexus","status":"ready"}' || true
+          fi
+          echo "Merge to main complete. Run 'git pull' on Mac Mini to deploy."

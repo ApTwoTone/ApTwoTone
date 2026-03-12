@@ -1,0 +1,345 @@
+{
+  "campaign": {
+    "name": "Zoar SoCal Events 2026",
+    "objective": "LEADS",
+    "pixel_id": "1087553350137807",
+    "budget_total": 100,
+    "duration_days": 7,
+    "daily_budget": 14.28,
+    "start_date": "2026-03-01",
+    "end_date": "2026-03-07",
+    "optimization_goal": "LEAD_GENERATION",
+    "billing_event": "IMPRESSIONS",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "notes": "Wedding season is March-October. February is prime booking window. All ads drive to website for quote — no pricing listed in ads."
+  },
+  "ads": [
+    {
+      "id": "variation_a",
+      "name": "Wedding Focus",
+      "primary_text": "You planned every detail. The dress. The flowers. The playlist. Don't let a row of porta-potties ruin the magic.\n\nZoar Bathroom Rentals brings a luxury 4-stall restroom trailer to your wedding day. Porcelain toilets. Running water. AC. Hardwood floors. Full-length mirrors. LED lighting.\n\nYour guests will think it's part of the venue.\n\nSpring wedding dates are booking fast. Get your free quote in 2 minutes.",
+      "primary_text_preview": "You planned every detail. Don't let porta-potties ruin the magic.",
+      "headline": "Luxury Restrooms for Your Wedding",
+      "description": "Spring Dates Filling Fast",
+      "cta": "GET_QUOTE",
+      "link": "https://zoarbathroomrental.com?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_2026&utm_content=variation_a",
+      "targeting": {
+        "age_min": 25,
+        "age_max": 45,
+        "genders": ["female"],
+        "locations": [
+          {"city": "Los Angeles", "radius_miles": 25},
+          {"city": "Santa Monica", "radius_miles": 25},
+          {"city": "San Fernando Valley", "radius_miles": 25},
+          {"city": "Santa Clarita", "radius_miles": 25},
+          {"city": "Oxnard", "radius_miles": 25},
+          {"city": "Ventura", "radius_miles": 25}
+        ],
+        "interests": [
+          "Wedding planning",
+          "Bridal shower",
+          "The Knot (website)",
+          "Zola (wedding registry)",
+          "WeddingWire",
+          "Outdoor wedding",
+          "Vineyard wedding",
+          "Ranch wedding",
+          "Backyard wedding",
+          "Wedding venues"
+        ],
+        "behaviors": [
+          "Engaged (1 year)",
+          "Engaged (6 months)",
+          "Newly engaged",
+          "Recently changed relationship status"
+        ],
+        "exclusions": ["Already converted via pixel"],
+        "placements": ["facebook_feed", "instagram_feed", "instagram_stories", "facebook_stories"]
+      },
+      "budget_pct": 30,
+      "budget_daily": 4.29,
+      "budget_total": 30.00,
+      "creative_notes": "Use HiggsField images of trailer at vineyard/garden wedding setting. Golden hour lighting. Show exterior with string lights and flowers nearby. Second image: interior shot with mirrors and hardwood floors."
+    },
+    {
+      "id": "variation_b",
+      "name": "Corporate Event",
+      "primary_text": "Your company event needs real restrooms. Not plastic boxes in a parking lot.\n\nZoar Bathroom Rentals delivers a luxury 4-stall restroom trailer with flushing toilets, running water, climate control, and a clean, modern interior your team and clients will actually appreciate.\n\nDelivery. Setup. Pickup. All handled.\n\nRequest a free quote for your next corporate event.",
+      "primary_text_preview": "Your company event needs real restrooms. Not plastic boxes.",
+      "headline": "Upscale Restrooms for Your Event",
+      "description": "Delivery + Setup Included",
+      "cta": "LEARN_MORE",
+      "link": "https://zoarbathroomrental.com?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_2026&utm_content=variation_b",
+      "targeting": {
+        "age_min": 28,
+        "age_max": 55,
+        "genders": ["all"],
+        "locations": [
+          {"city": "Los Angeles", "radius_miles": 25},
+          {"city": "Santa Monica", "radius_miles": 25},
+          {"city": "San Fernando Valley", "radius_miles": 25},
+          {"city": "Ventura", "radius_miles": 25}
+        ],
+        "interests": [
+          "Event planning",
+          "Corporate events",
+          "Human resource management",
+          "Team building",
+          "Company retreat",
+          "Event management",
+          "Conference planning",
+          "Trade shows",
+          "Product launch"
+        ],
+        "behaviors": [
+          "Business decision makers",
+          "Small business owners",
+          "Corporate event planners",
+          "Office managers"
+        ],
+        "job_titles": [
+          "Event Coordinator",
+          "Event Planner",
+          "Office Manager",
+          "HR Manager",
+          "Executive Assistant",
+          "Operations Manager"
+        ],
+        "exclusions": ["Already converted via pixel"],
+        "placements": ["facebook_feed", "instagram_feed", "facebook_right_column"]
+      },
+      "budget_pct": 20,
+      "budget_daily": 2.86,
+      "budget_total": 20.00,
+      "creative_notes": "Use HiggsField images of trailer in professional setting — corporate park, office campus, or modern venue. Clean, well-lit exterior shot. Interior shot highlighting cleanliness and modern design."
+    },
+    {
+      "id": "variation_c",
+      "name": "Festival and Party",
+      "primary_text": "Throwing an outdoor party? Your guests will remember two things: the music and the bathrooms.\n\nMake sure both are good.\n\nZoar Bathroom Rentals provides a luxury 4-stall restroom trailer with real toilets, running water, AC, Bluetooth speakers, and LED lighting. No lines. No smells. No complaints.\n\nBook now for spring and summer events.",
+      "primary_text_preview": "Outdoor party? Guests remember the music AND the bathrooms.",
+      "headline": "Skip the Porta-Potties",
+      "description": "Book Your Spring Event",
+      "cta": "GET_QUOTE",
+      "link": "https://zoarbathroomrental.com?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_2026&utm_content=variation_c",
+      "targeting": {
+        "age_min": 25,
+        "age_max": 50,
+        "genders": ["all"],
+        "locations": [
+          {"city": "Los Angeles", "radius_miles": 25},
+          {"city": "Santa Monica", "radius_miles": 25},
+          {"city": "San Fernando Valley", "radius_miles": 25},
+          {"city": "Santa Clarita", "radius_miles": 25},
+          {"city": "Oxnard", "radius_miles": 25},
+          {"city": "Ventura", "radius_miles": 25}
+        ],
+        "interests": [
+          "Party planning",
+          "Outdoor entertainment",
+          "Outdoor events",
+          "Festival",
+          "Music festival",
+          "Block party",
+          "Birthday party",
+          "Graduation party",
+          "Backyard party",
+          "Quincea\u00f1era",
+          "Family reunion",
+          "BBQ"
+        ],
+        "behaviors": [
+          "Event creators",
+          "Frequent event attendees",
+          "Party hosts"
+        ],
+        "exclusions": ["Already converted via pixel"],
+        "placements": ["facebook_feed", "instagram_feed", "instagram_stories", "instagram_reels", "facebook_stories"]
+      },
+      "budget_pct": 20,
+      "budget_daily": 2.86,
+      "budget_total": 20.00,
+      "creative_notes": "Use HiggsField images of trailer at outdoor party or festival. Fun, vibrant setting — string lights, tents, food trucks nearby. Show the Bluetooth speaker and LED lighting features. Carousel format recommended: exterior, interior amenities, setup process."
+    },
+    {
+      "id": "variation_d",
+      "name": "Construction and Film",
+      "primary_text": "Job site. Film set. Multi-day production. Your crew deserves better than a blue box.\n\nZoar Bathroom Rentals provides a 4-stall luxury restroom trailer with flushing toilets, running water, AC, and a clean interior. Professional delivery and pickup anywhere in the LA metro.\n\nKeep your crew comfortable. Keep your project on schedule.\n\nGet a free quote today.",
+      "primary_text_preview": "Job site or film set? Your crew deserves better than a blue box.",
+      "headline": "Pro Restrooms for Your Crew",
+      "description": "LA Metro Delivery Included",
+      "cta": "LEARN_MORE",
+      "link": "https://zoarbathroomrental.com?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_2026&utm_content=variation_d",
+      "targeting": {
+        "age_min": 28,
+        "age_max": 55,
+        "genders": ["all"],
+        "locations": [
+          {"city": "Los Angeles", "radius_miles": 25},
+          {"city": "San Fernando Valley", "radius_miles": 25},
+          {"city": "Santa Clarita", "radius_miles": 25},
+          {"city": "Santa Monica", "radius_miles": 25},
+          {"city": "Ventura", "radius_miles": 25}
+        ],
+        "interests": [
+          "Construction",
+          "General contractor",
+          "Film production",
+          "Television production",
+          "Film industry",
+          "Location manager",
+          "Real estate development",
+          "Home renovation",
+          "Commercial construction"
+        ],
+        "behaviors": [
+          "Business decision makers",
+          "Small business owners",
+          "Industry professionals"
+        ],
+        "job_titles": [
+          "General Contractor",
+          "Construction Manager",
+          "Site Supervisor",
+          "Production Manager",
+          "Line Producer",
+          "Location Manager",
+          "Production Coordinator",
+          "Unit Production Manager"
+        ],
+        "exclusions": ["Already converted via pixel"],
+        "placements": ["facebook_feed", "facebook_right_column"]
+      },
+      "budget_pct": 15,
+      "budget_daily": 2.14,
+      "budget_total": 15.00,
+      "creative_notes": "Use HiggsField images of trailer in professional/industrial context — parked near a clean job site or production basecamp. Emphasize durability and cleanliness. Single image format, straightforward and professional tone."
+    },
+    {
+      "id": "variation_e",
+      "name": "Testimonial Social Proof",
+      "primary_text": "Here's what our clients are saying:\n\n\"We rented this for our daughter's outdoor wedding in Malibu. Guests kept asking if it was a permanent building. Absolutely worth every penny.\" -- R. Delgado, Malibu\n\n\"Our production team used Zoar on a 3-day shoot in Santa Clarita. Clean, reliable, and actually comfortable. Already rebooked for April.\" -- M. Chen, Santa Clarita\n\n\"Upgraded from porta-potties for our company BBQ. Best decision we made. People are still talking about it.\" -- J. Navarro, Sherman Oaks\n\nLuxury 4-stall restroom trailer. Porcelain toilets. Running water. AC. Delivered, set up, and picked up.\n\nSee why SoCal trusts Zoar Bathroom Rentals. Get your free quote.",
+      "primary_text_preview": "\"Guests kept asking if it was a permanent building.\" -- See why SoCal trusts Zoar.",
+      "headline": "Rated 5 Stars by LA Event Hosts",
+      "description": "See Why Clients Love Us",
+      "cta": "GET_QUOTE",
+      "link": "https://zoarbathroomrental.com?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_2026&utm_content=variation_e",
+      "targeting": {
+        "age_min": 25,
+        "age_max": 55,
+        "genders": ["all"],
+        "locations": [
+          {"city": "Los Angeles", "radius_miles": 25},
+          {"city": "Santa Monica", "radius_miles": 25},
+          {"city": "San Fernando Valley", "radius_miles": 25},
+          {"city": "Santa Clarita", "radius_miles": 25},
+          {"city": "Oxnard", "radius_miles": 25},
+          {"city": "Ventura", "radius_miles": 25}
+        ],
+        "interests": [
+          "Wedding planning",
+          "Event planning",
+          "Party planning",
+          "Outdoor events",
+          "Outdoor entertainment",
+          "Home improvement",
+          "Backyard entertaining"
+        ],
+        "behaviors": [
+          "Engaged shoppers",
+          "Online event bookers"
+        ],
+        "exclusions": ["Already converted via pixel"],
+        "placements": ["facebook_feed", "instagram_feed", "instagram_stories", "facebook_stories"]
+      },
+      "budget_pct": 15,
+      "budget_daily": 2.14,
+      "budget_total": 15.00,
+      "creative_notes": "Use HiggsField images showing the trailer looking its best — clean, well-lit, inviting. Consider carousel format: image 1 with quote overlay for wedding testimonial, image 2 for production testimonial, image 3 for corporate testimonial. Each image matched to the testimonial context."
+    }
+  ],
+  "campaigns_v2": [
+    {
+      "id": "video_lead_form_socal",
+      "name": "Video Lead Form - SoCal Weddings",
+      "type": "video_lead_form",
+      "status": "PAUSED",
+      "created": "2026-03-01",
+      "objective": "OUTCOME_LEADS",
+      "daily_budget": 15.00,
+      "optimization_goal": "LEAD_GENERATION",
+      "ad_set": {
+        "name": "Broader SoCal - Wedding & Event Interest",
+        "targeting": {
+          "age_min": 24,
+          "age_max": 50,
+          "genders": ["all"],
+          "locations": [
+            {"city": "Los Angeles", "radius_miles": 40},
+            {"city": "Ventura", "radius_miles": 25},
+            {"city": "Santa Clarita", "radius_miles": 25},
+            {"city": "Oxnard", "radius_miles": 25}
+          ],
+          "interests": [
+            "Wedding planning", "Event planning", "Outdoor wedding",
+            "Bridal shower", "Party planning", "Wedding venues",
+            "The Knot (website)", "WeddingWire", "Corporate events",
+            "Film production"
+          ],
+          "placements": ["facebook_feed", "instagram_feed", "instagram_stories", "instagram_reels", "facebook_reels"]
+        }
+      },
+      "lead_form": {
+        "name": "Zoar Quote Request - Video",
+        "fields": ["full_name", "phone", "email", "event_type"],
+        "event_type_options": ["Wedding", "Corporate Event", "Birthday/Party", "Festival/Concert", "Construction Site", "Film/Production", "Other"],
+        "intro_headline": "Get a Free Quote in 2 Minutes",
+        "thank_you": "Thanks! We'll Reach Out Within an Hour"
+      },
+      "ad_creative": {
+        "name": "Video - Luxury Restroom Trailer",
+        "format": "video",
+        "primary_text": "Stop worrying about your guests' comfort. Our luxury 4-stall restroom trailer has AC, running water, hardwood floors & full-length mirrors. Your guests will think it's part of the venue.\n\nServing all of SoCal \u2014 LA, Valley, Ventura, Santa Clarita & beyond.\n\nGet your free quote in 2 minutes \ud83d\udc47",
+        "headline": "Luxury Restroom Trailer Rental",
+        "description": "Serving SoCal \u2014 Free Quotes",
+        "cta": "GET_QUOTE"
+      },
+      "notes": "A/B test: Video lead form vs existing image lead form campaigns. Broader SoCal targeting vs SFV-only. Compare CPL, lead quality, and form completion rate."
+    }
+  ],
+  "tracking": {
+    "pixel_id": "1087553350137807",
+    "conversion_events": ["Lead", "ViewContent", "Contact", "SubmitApplication"],
+    "utm_source": "facebook",
+    "utm_medium": "paid",
+    "utm_campaign": "socal_events_2026",
+    "custom_conversions": {
+      "quote_request": "Track form submissions on zoarbathroomrental.com",
+      "phone_call": "Track click-to-call from landing page",
+      "email_click": "Track mailto link clicks"
+    }
+  },
+  "budget_allocation_rationale": {
+    "variation_a_wedding_30pct": "Highest intent and highest ticket value. Wedding couples book early, have budgets, and are in peak decision mode for spring/summer 2026. This audience also converts well on Facebook/Instagram due to visual-heavy platform match.",
+    "variation_b_corporate_20pct": "Reliable repeat business potential. Corporate event planners rebook seasonally. Lower emotional urgency than weddings but strong LTV.",
+    "variation_c_festival_party_20pct": "Broad audience, high volume. Spring/summer party season drives demand. Good for brand awareness and lead volume.",
+    "variation_d_construction_film_15pct": "Niche but high-value. LA's film industry is a steady source of multi-day bookings. Lower competition for this audience on Facebook ads.",
+    "variation_e_testimonial_15pct": "Social proof converts fence-sitters. Retargeting-friendly. Works as a trust builder for people who saw other ads but didn't convert."
+  },
+  "recommended_schedule": {
+    "day_1_2": "Launch all 5 ads. Monitor impressions, CTR, and CPM.",
+    "day_3": "Pause any ad with CTR below 0.8%. Reallocate budget to top 2 performers.",
+    "day_4_5": "Let top performers run. Check cost per lead.",
+    "day_6_7": "Final optimization. Kill underperformers, push budget to lowest cost-per-lead ad. Document results for next campaign cycle."
+  },
+  "creative_assets": {
+    "source": "HiggsField AI-generated images",
+    "total_available": 365,
+    "recommended_per_ad": "2-3 images per ad (carousel or single image with A/B test)",
+    "image_specs": {
+      "feed": "1080x1080 or 1200x628",
+      "stories": "1080x1920",
+      "format": "JPG or PNG, under 30MB"
+    }
+  }
+}

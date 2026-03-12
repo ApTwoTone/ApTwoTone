@@ -1,0 +1,30 @@
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.formatOnSave": true
+  },
+
+  "emmet.includeLanguages": {
+    "typescriptreact": "html"
+  },
+
+  "tailwindCSS.experimental.classRegex": [
+    ["className\\s*=\\s*['\"]([^'\"]*)", "([^'\"\\s]*)"]
+  ],
+
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/out": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/out": true
+  }
+}

@@ -1,0 +1,1 @@
+{"default":{"identifier":"default","description":"Default permissions for Nexus Network desktop app","local":true,"windows":["main"],"permissions":["core:default","shell:allow-open",{"identifier":"http:default","allow":[{"url":"http://localhost:7860/**"},{"url":"http://localhost:7861/**"},{"url":"http://127.0.0.1:7860/**"},{"url":"http://127.0.0.1:7861/**"}]}]}}

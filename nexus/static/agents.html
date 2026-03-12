@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus — Agent Control</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --card: #12121a;
+    --border: #1e1e2e;
+    --text: #e0e0e0;
+    --dim: #666;
+    --accent: #4f9cf7;
+    --green: #34d399;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --purple: #a78bfa;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'SF Pro Text', 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  .header h1 span { color: var(--accent); }
+  .status-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+  .status-dot.live { background: var(--green); }
+  .status-dot.stale { background: var(--yellow); }
+  .status-dot.dead { background: var(--red); }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .meta { font-size: 12px; color: var(--dim); }
+  .meta .refresh { color: var(--accent); cursor: pointer; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat .label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat .value { font-size: 24px; font-weight: 700; margin-top: 4px; }
+  .stat .value.green { color: var(--green); }
+  .stat .value.yellow { color: var(--yellow); }
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--dim);
+    margin-bottom: 12px;
+  }
+  .agents { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .agent-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+    transition: border-color 0.2s;
+  }
+  .agent-card:hover { border-color: var(--accent); }
+  .icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .icon.claude { background: #2a1f3d; color: var(--purple); }
+  .icon.codex { background: #1a2f1a; color: var(--green); }
+  .icon.server { background: #1a2a3d; color: var(--accent); }
+  .agent-name { font-weight: 600; font-size: 14px; }
+  .agent-device { font-size: 12px; color: var(--dim); margin-top: 2px; }
+  .agent-task { font-size: 13px; margin-top: 6px; color: var(--text); line-height: 1.4; }
+  .agent-files {
+    font-size: 11px;
+    color: var(--yellow);
+    margin-top: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .agent-meta { text-align: right; font-size: 11px; color: var(--dim); }
+  .heartbeat { margin-top: 4px; }
+  .heartbeat.fresh { color: var(--green); }
+  .heartbeat.warn { color: var(--yellow); }
+  .heartbeat.stale { color: var(--red); }
+  .timeline { display: flex; flex-direction: column; gap: 6px; }
+  .timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  .tl-time { color: var(--dim); font-size: 11px; min-width: 60px; font-family: monospace; }
+  .tl-sid { color: var(--accent); font-weight: 500; min-width: 160px; }
+  .tl-work { color: var(--text); }
+  .locks { margin-bottom: 28px; }
+  .lock-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--yellow);
+  }
+  .lock-owner { color: var(--accent); }
+  .lock-arrow { color: var(--dim); }
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab {
+    padding: 8px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .task-board { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .task-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .task-card:hover { border-color: var(--accent); }
+  .task-priority {
+    width: 6px;
+    height: 100%;
+    min-height: 32px;
+    border-radius: 3px;
+  }
+  .task-priority.p5, .task-priority.p4 { background: var(--red); }
+  .task-priority.p3 { background: var(--yellow); }
+  .task-priority.p2, .task-priority.p1 { background: var(--green); }
+  .task-title { font-weight: 600; font-size: 14px; }
+  .task-desc { font-size: 12px; color: var(--dim); margin-top: 2px; }
+  .task-status {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  .task-status.open { background: #1a2a3d; color: var(--accent); }
+  .task-status.claimed { background: #2a2a1a; color: var(--yellow); }
+  .task-status.in_progress { background: #1a2f1a; color: var(--green); }
+  .task-status.done { background: #1a1a1a; color: var(--dim); }
+  .task-status.blocked { background: #2d1515; color: var(--red); }
+  .task-assignee { font-size: 11px; color: var(--dim); margin-top: 4px; }
+  .add-task-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .add-task-form input, .add-task-form select {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+  }
+  .add-task-form input:focus { border-color: var(--accent); }
+  .add-task-form input[name="title"] { flex: 1; min-width: 200px; }
+  .add-task-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .add-task-btn:hover { opacity: 0.85; }
+  .empty { color: var(--dim); font-size: 13px; padding: 20px; text-align: center; }
+  .error-banner {
+    background: #2d1515;
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--red);
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>NEXUS</span> Agent Control</h1>
+  <div class="meta">
+    <span class="status-dot live" id="statusDot"></span>
+    <span id="statusText">Connecting...</span>
+  </div>
+</div>
+
+<div class="error-banner" id="errorBanner"></div>
+
+<div class="stats" id="statsBar">
+  <div class="stat"><div class="label">Active Agents</div><div class="value green" id="statAgents">-</div></div>
+  <div class="stat"><div class="label">Completed Today</div><div class="value" id="statCompleted">-</div></div>
+  <div class="stat"><div class="label">File Locks</div><div class="value yellow" id="statLocks">-</div></div>
+  <div class="stat"><div class="label">Last Update</div><div class="value" id="statUpdate" style="font-size:14px">-</div></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="agents">Agents</div>
+  <div class="tab" data-tab="tasks">Task Board</div>
+</div>
+
+<div class="tab-content active" id="tab-agents">
+  <div class="section-title">Active Agents</div>
+  <div class="agents" id="agentsList"><div class="empty">Loading...</div></div>
+
+  <div class="section-title">File Locks</div>
+  <div class="locks" id="locksList"><div class="empty">None</div></div>
+
+  <div class="section-title">Completed Today</div>
+  <div class="timeline" id="timelineList"><div class="empty">Loading...</div></div>
+</div>
+
+<div class="tab-content" id="tab-tasks">
+  <form class="add-task-form" id="addTaskForm">
+    <input name="title" placeholder="Task title..." required>
+    <select name="priority">
+      <option value="5">P1 Critical</option>
+      <option value="4">P2 High</option>
+      <option value="3" selected>P3 Medium</option>
+      <option value="2">P4 Low</option>
+      <option value="1">P5 Backlog</option>
+    </select>
+    <button type="submit" class="add-task-btn">+ Add Task</button>
+  </form>
+
+  <div class="section-title">Open / In Progress</div>
+  <div class="task-board" id="taskActive"><div class="empty">No tasks yet</div></div>
+
+  <div class="section-title">Completed</div>
+  <div class="task-board" id="taskDone"><div class="empty">Nothing completed</div></div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+let errorCount = 0;
+
+function agentIconInfo(type) {
+  const t = (type || '').toLowerCase();
+  if (t.includes('claude')) return { cls: 'claude', letter: 'C' };
+  if (t.includes('codex')) return { cls: 'codex', letter: 'X' };
+  if (t.includes('server')) return { cls: 'server', letter: 'S' };
+  return { cls: 'claude', letter: 'A' };
+}
+
+function timeAgo(ts) {
+  if (!ts) return '?';
+  const d = new Date(ts.replace(' ', 'T') + (ts.includes('Z') ? '' : 'Z'));
+  const secs = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (secs < 60) return secs + 's ago';
+  if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
+  if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+  return Math.floor(secs / 86400) + 'd ago';
+}
+
+function heartbeatClass(ts) {
+  if (!ts) return 'stale';
+  const d = new Date(ts.replace(' ', 'T') + (ts.includes('Z') ? '' : 'Z'));
+  const mins = (Date.now() - d.getTime()) / 60000;
+  if (mins < 5) return 'fresh';
+  if (mins < 30) return 'warn';
+  return 'stale';
+}
+
+function shortTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts.replace(' ', 'T') + (ts.includes('Z') ? '' : 'Z'));
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function createTextEl(tag, text, className) {
+  const el = document.createElement(tag);
+  el.textContent = text;
+  if (className) el.className = className;
+  return el;
+}
+
+function renderAgents(sessions) {
+  const container = document.getElementById('agentsList');
+  container.replaceChildren();
+  if (!sessions || sessions.length === 0) {
+    container.appendChild(createTextEl('div', 'No active agents', 'empty'));
+    return;
+  }
+  sessions.forEach(function(s) {
+    const card = document.createElement('div');
+    card.className = 'agent-card';
+
+    const iconInfo = agentIconInfo(s.agent_type);
+    const iconEl = createTextEl('div', iconInfo.letter, 'icon ' + iconInfo.cls);
+    card.appendChild(iconEl);
+
+    const info = document.createElement('div');
+    info.appendChild(createTextEl('div', s.session_id, 'agent-name'));
+    info.appendChild(createTextEl('div', (s.device || '?') + ' \u00b7 ' + (s.agent_type || '?'), 'agent-device'));
+    info.appendChild(createTextEl('div', s.working_on || 'Idle', 'agent-task'));
+
+    const files = (s.files_locked || []).filter(function(f) { return f && f.trim(); });
+    if (files.length) {
+      info.appendChild(createTextEl('div', '\uD83D\uDCC1 ' + files.join(', '), 'agent-files'));
+    }
+    card.appendChild(info);
+
+    const meta = document.createElement('div');
+    meta.className = 'agent-meta';
+    meta.appendChild(createTextEl('div', 'Started ' + timeAgo(s.started_at)));
+    const hb = createTextEl('div', '\u2665 ' + timeAgo(s.last_heartbeat), 'heartbeat ' + heartbeatClass(s.last_heartbeat));
+    meta.appendChild(hb);
+    card.appendChild(meta);
+
+    container.appendChild(card);
+  });
+}
+
+function renderLocks(locks) {
+  const container = document.getElementById('locksList');
+  container.replaceChildren();
+  const entries = Object.entries(locks || {});
+  if (entries.length === 0) {
+    container.appendChild(createTextEl('div', 'No file locks', 'empty'));
+    return;
+  }
+  entries.forEach(function(entry) {
+    var file = entry[0];
+    var info = entry[1];
+    var owner = typeof info === 'string' ? info : (info.session_id || '?');
+    var item = document.createElement('div');
+    item.className = 'lock-item';
+    item.appendChild(document.createTextNode('\uD83D\uDD12 ' + file + ' '));
+    item.appendChild(createTextEl('span', '\u2192', 'lock-arrow'));
+    item.appendChild(document.createTextNode(' '));
+    item.appendChild(createTextEl('span', owner, 'lock-owner'));
+    container.appendChild(item);
+  });
+}
+
+function renderTimeline(completed) {
+  const container = document.getElementById('timelineList');
+  container.replaceChildren();
+  if (!completed || completed.length === 0) {
+    container.appendChild(createTextEl('div', 'Nothing completed today', 'empty'));
+    return;
+  }
+  completed.slice(0, 15).forEach(function(c) {
+    var work = c.completed_work || [];
+    if (typeof work === 'string') {
+      try { work = JSON.parse(work); } catch(e) { work = [work]; }
+    }
+    var workStr = Array.isArray(work) ? work.join(', ') : String(work);
+
+    var item = document.createElement('div');
+    item.className = 'timeline-item';
+    item.appendChild(createTextEl('div', shortTime(c.last_heartbeat), 'tl-time'));
+    item.appendChild(createTextEl('div', c.session_id, 'tl-sid'));
+    item.appendChild(createTextEl('div', workStr || 'completed', 'tl-work'));
+    container.appendChild(item);
+  });
+}
+
+async function fetchStatus() {
+  try {
+    const resp = await fetch(API_BASE + '/api/coordination/status', { signal: AbortSignal.timeout(15000) });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    errorCount = 0;
+
+    var active = data.active_sessions || [];
+    var completed = data.completed_today || [];
+    var locks = Object.keys(data.locked_files || {});
+    document.getElementById('statAgents').textContent = active.length;
+    document.getElementById('statCompleted').textContent = completed.length;
+    document.getElementById('statLocks').textContent = locks.length;
+    document.getElementById('statUpdate').textContent = new Date().toLocaleTimeString();
+
+    document.getElementById('statusDot').className = 'status-dot live';
+    document.getElementById('statusText').textContent = 'Live';
+    document.getElementById('errorBanner').style.display = 'none';
+
+    renderAgents(active);
+    renderLocks(data.locked_files);
+    renderTimeline(completed);
+  } catch (err) {
+    errorCount++;
+    document.getElementById('statusDot').className = 'status-dot dead';
+    document.getElementById('statusText').textContent = 'Disconnected';
+    var banner = document.getElementById('errorBanner');
+    banner.textContent = 'Cannot reach server: ' + err.message + (errorCount > 3 ? ' (retrying...)' : '');
+    banner.style.display = 'block';
+  }
+}
+
+// ── Tab switching ──
+document.querySelectorAll('.tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab === 'tasks') fetchTasks();
+  });
+});
+
+// ── Task Board ──
+function renderTasks(tasks) {
+  var activeContainer = document.getElementById('taskActive');
+  var doneContainer = document.getElementById('taskDone');
+  activeContainer.replaceChildren();
+  doneContainer.replaceChildren();
+
+  var activeTasks = tasks.filter(function(t) { return t.status !== 'done'; });
+  var doneTasks = tasks.filter(function(t) { return t.status === 'done'; });
+
+  if (activeTasks.length === 0) {
+    activeContainer.appendChild(createTextEl('div', 'No active tasks — add one above', 'empty'));
+  }
+  activeTasks.forEach(function(t) {
+    var card = document.createElement('div');
+    card.className = 'task-card';
+
+    var pbar = document.createElement('div');
+    pbar.className = 'task-priority p' + t.priority;
+    card.appendChild(pbar);
+
+    var info = document.createElement('div');
+    info.appendChild(createTextEl('div', '#' + t.id + ': ' + t.title, 'task-title'));
+    if (t.description) info.appendChild(createTextEl('div', t.description, 'task-desc'));
+    var assignee = t.assigned_to || 'unassigned';
+    var note = t.progress_note ? ' — ' + t.progress_note : '';
+    info.appendChild(createTextEl('div', assignee + note, 'task-assignee'));
+    card.appendChild(info);
+
+    var badge = createTextEl('span', t.status, 'task-status ' + t.status);
+    card.appendChild(badge);
+
+    activeContainer.appendChild(card);
+  });
+
+  if (doneTasks.length === 0) {
+    doneContainer.appendChild(createTextEl('div', 'Nothing completed', 'empty'));
+  }
+  doneTasks.slice(0, 10).forEach(function(t) {
+    var card = document.createElement('div');
+    card.className = 'task-card';
+    var pbar = document.createElement('div');
+    pbar.className = 'task-priority p' + t.priority;
+    card.appendChild(pbar);
+    var info = document.createElement('div');
+    info.appendChild(createTextEl('div', '#' + t.id + ': ' + t.title, 'task-title'));
+    info.appendChild(createTextEl('div', (t.assigned_to || '?') + ' — ' + (t.completed_at || ''), 'task-assignee'));
+    card.appendChild(info);
+    card.appendChild(createTextEl('span', 'done', 'task-status done'));
+    doneContainer.appendChild(card);
+  });
+}
+
+async function fetchTasks() {
+  try {
+    var resp = await fetch(API_BASE + '/api/tasks', { signal: AbortSignal.timeout(15000) });
+    if (!resp.ok) return;
+    var data = await resp.json();
+    renderTasks(data.tasks || []);
+  } catch(e) { /* silent */ }
+}
+
+// ── Add task form ──
+document.getElementById('addTaskForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var form = e.target;
+  var title = form.title.value.trim();
+  if (!title) return;
+  try {
+    await fetch(API_BASE + '/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: title, priority: parseInt(form.priority.value) })
+    });
+    form.title.value = '';
+    fetchTasks();
+  } catch(e) { /* silent */ }
+});
+
+fetchStatus();
+setInterval(fetchStatus, 3000);
+// Poll tasks every 5s when task tab is active
+setInterval(function() {
+  if (document.querySelector('.tab[data-tab="tasks"]').classList.contains('active')) fetchTasks();
+}, 5000);
+</script>
+</body>
+</html>

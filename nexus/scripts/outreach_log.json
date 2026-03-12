@@ -1,0 +1,191 @@
+[
+  {
+    "name": "Calamigos Ranch",
+    "email": "events@calamigos.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:34:01.935136"
+  },
+  {
+    "name": "Hummingbird Nest Ranch",
+    "email": "erica@hbnest.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:34:27.978197"
+  },
+  {
+    "name": "Rancho Las Lomas",
+    "email": "info@rancholaslomas.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:34:54.445305"
+  },
+  {
+    "name": "Gerry Ranch",
+    "email": "info@gerryranch.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:35:20.855713"
+  },
+  {
+    "name": "Quail Ranch",
+    "email": "joanne@quailranchevents.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:35:47.603618"
+  },
+  {
+    "name": "Malibu Solstice Vineyards",
+    "email": "concierge@malibusolstice.net",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:36:13.680935"
+  },
+  {
+    "name": "The 1909",
+    "email": "info@the1909.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:36:40.411633"
+  },
+  {
+    "name": "Sunstone Winery & Villa",
+    "email": "events@sunstonewinery.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:37:06.731933"
+  },
+  {
+    "name": "Figueroa Mountain Farmhouse",
+    "email": "info@figueroamountainfarmhouse.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:37:32.838039"
+  },
+  {
+    "name": "Plated Events at the Ranch",
+    "email": "info@platedevents.com",
+    "category": "venue",
+    "status": "sent",
+    "ts": "2026-02-28T17:37:59.562918"
+  },
+  {
+    "name": "Wild Heart Events",
+    "email": "hello@wildheartevents.com",
+    "category": "planner",
+    "status": "sent",
+    "ts": "2026-02-28T17:38:25.908888"
+  },
+  {
+    "name": "LVL Weddings & Events",
+    "email": "info@lvlevents.com",
+    "category": "planner",
+    "status": "sent",
+    "ts": "2026-02-28T17:38:52.614023"
+  },
+  {
+    "name": "Details Details",
+    "email": "info@aboutdetailsdetails.com",
+    "category": "planner",
+    "status": "sent",
+    "ts": "2026-02-28T17:39:18.653710"
+  },
+  {
+    "name": "Cortney Helaine Events",
+    "email": "cortney@cortneyhelaine.com",
+    "category": "planner",
+    "status": "sent",
+    "ts": "2026-02-28T17:39:45.039526"
+  },
+  {
+    "name": "Emily Coyne Events",
+    "email": "hello@emilycoyneevents.com",
+    "category": "planner",
+    "status": "sent",
+    "ts": "2026-02-28T17:40:11.769938"
+  },
+  {
+    "name": "24 Carrots Catering & Events",
+    "email": "info@24carrots.com",
+    "category": "caterer",
+    "status": "sent",
+    "ts": "2026-02-28T17:40:38.585808"
+  },
+  {
+    "name": "Gourmet Celebrations",
+    "email": "info@gourmetcelebrations.com",
+    "category": "caterer",
+    "status": "sent",
+    "ts": "2026-02-28T17:41:04.627084"
+  },
+  {
+    "name": "TGIS Catering",
+    "email": "tgis.catering@tgiscatering.com",
+    "category": "caterer",
+    "status": "sent",
+    "ts": "2026-02-28T17:41:30.984868"
+  },
+  {
+    "name": "Made by Meg Catering",
+    "email": "info@mbmcatering.com",
+    "category": "caterer",
+    "status": "sent",
+    "ts": "2026-02-28T17:41:57.655988"
+  },
+  {
+    "name": "Haute Chefs LA",
+    "email": "info@hautechefsla.com",
+    "category": "caterer",
+    "status": "sent",
+    "ts": "2026-02-28T17:42:24.369013"
+  },
+  {
+    "name": "Colette's Catering & Events",
+    "email": "info@colettesevents.com",
+    "category": "caterer",
+    "status": "sent",
+    "ts": "2026-02-28T17:42:50.813053"
+  },
+  {
+    "name": "Image Locations",
+    "email": "paul@imagelocations.com",
+    "category": "production",
+    "status": "sent",
+    "ts": "2026-02-28T17:43:17.564892"
+  },
+  {
+    "name": "All Pictures Media",
+    "email": "support@allpicturesmedia.com",
+    "category": "production",
+    "status": "sent",
+    "ts": "2026-02-28T17:43:44.236004"
+  },
+  {
+    "name": "LA Film Locations",
+    "email": "hello@lafilmlocations.com",
+    "category": "production",
+    "status": "sent",
+    "ts": "2026-02-28T17:44:10.556979"
+  },
+  {
+    "name": "Alpha Film Locations",
+    "email": "info@alphafilmlocations.com",
+    "category": "production",
+    "status": "sent",
+    "ts": "2026-02-28T17:44:37.255903"
+  },
+  {
+    "name": "Hummingbird Nest Ranch (Filming)",
+    "email": "filming@hbnest.com",
+    "category": "production",
+    "status": "sent",
+    "ts": "2026-02-28T17:45:03.704032"
+  },
+  {
+    "name": "Line 204",
+    "email": "supplies@line204.com",
+    "category": "production",
+    "status": "sent",
+    "ts": "2026-02-28T17:45:30.493194"
+  }
+]

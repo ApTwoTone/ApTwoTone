@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Nexus Network</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+      colors: {
+        brand: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' },
+      },
+      animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'slide-in': 'slideIn 0.3s ease-out',
+        'fade-in': 'fadeIn 0.2s ease-out',
+      },
+      keyframes: {
+        slideIn: { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } },
+        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+      }
+    }
+  }
+}
+</script>
+<style>
+  [x-cloak] { display: none !important; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #1e293b; }
+  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+  .kanban-col { min-height: 120px; }
+  .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); }
+  .metric-card { transition: all 0.2s ease; }
+  .metric-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+  .nav-item { transition: all 0.15s ease; }
+  .nav-item:hover { background: rgba(59, 130, 246, 0.1); }
+  .nav-item.active { background: rgba(59, 130, 246, 0.15); border-right: 3px solid #3b82f6; }
+  @media (max-width: 768px) { .nav-item.active { border-right: none; border-bottom: 2px solid #3b82f6; } }
+  .badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 9999px; font-weight: 600; letter-spacing: 0.025em; text-transform: uppercase; }
+  .skeleton { background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
+</head>
+
+<body class="bg-slate-950 text-slate-200 font-sans min-h-screen" x-data="nexusApp()" x-init="init()">
+
+<!-- ====== MOBILE NAV BAR (bottom) ====== -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 glass border-t border-slate-700/50 safe-area-bottom">
+  <div class="flex justify-around items-center py-1">
+    <template x-for="item in mobileNav" :key="item.page">
+      <button @click="go(item.page)" class="flex flex-col items-center py-2 px-3 rounded-lg transition-colors"
+              :class="page === item.page ? 'text-blue-400' : 'text-slate-500'">
+        <div x-html="item.icon" class="w-5 h-5"></div>
+        <span class="text-[10px] mt-0.5 font-medium" x-text="item.label"></span>
+      </button>
+    </template>
+  </div>
+</nav>
+
+<!-- ====== SIDEBAR (desktop) ====== -->
+<aside class="hidden md:flex fixed left-0 top-0 bottom-0 w-56 flex-col bg-slate-900/80 border-r border-slate-800/60 z-40">
+  <!-- Logo -->
+  <div class="flex items-center gap-3 px-5 py-5 border-b border-slate-800/60">
+    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+      <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    </div>
+    <div>
+      <div class="text-sm font-bold text-white tracking-tight">Nexus Network</div>
+      <div class="text-[10px] text-slate-500 font-medium">Zoar Bathroom Rentals</div>
+    </div>
+  </div>
+
+  <!-- Nav items -->
+  <nav class="flex-1 py-3 overflow-y-auto">
+    <template x-for="item in sidebarNav" :key="item.page">
+      <button @click="go(item.page)"
+              class="nav-item w-full flex items-center gap-3 px-5 py-2.5 text-left text-sm"
+              :class="page === item.page ? 'active text-blue-400 font-medium' : 'text-slate-400 hover:text-slate-200'">
+        <div x-html="item.icon" class="w-4.5 h-4.5 flex-shrink-0"></div>
+        <span x-text="item.label"></span>
+        <span x-show="item.badge && item.badge()" x-text="item.badge()"
+              class="ml-auto bg-blue-500/20 text-blue-400 text-[10px] font-bold px-1.5 py-0.5 rounded-full"></span>
+      </button>
+    </template>
+  </nav>
+
+  <!-- Bottom info -->
+  <div class="px-5 py-4 border-t border-slate-800/60">
+    <div class="flex items-center gap-2">
+      <div class="w-2 h-2 rounded-full" :class="healthColor"></div>
+      <span class="text-xs text-slate-500" x-text="healthLabel"></span>
+    </div>
+    <div class="text-[10px] text-slate-600 mt-1" x-text="currentTime"></div>
+  </div>
+</aside>
+
+<!-- ====== MAIN CONTENT ====== -->
+<main class="md:ml-56 pb-20 md:pb-4">
+
+  <!-- Top bar (mobile) -->
+  <header class="md:hidden sticky top-0 z-30 glass border-b border-slate-800/50 px-4 py-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <span class="font-bold text-white text-sm">Nexus</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-2 h-2 rounded-full" :class="healthColor"></div>
+        <span class="text-xs text-slate-500" x-text="currentTime"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-4 md:p-6 max-w-[1400px] mx-auto">
+
+    <!-- ====== HOME PAGE ====== -->
+    <section x-show="page==='home'" x-cloak>
+      <!-- Greeting -->
+      <div class="mb-6">
+        <h1 class="text-xl md:text-2xl font-bold text-white">Command Center</h1>
+        <p class="text-sm text-slate-500 mt-1" x-text="greetingText"></p>
+      </div>
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+        <div class="metric-card bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-500 font-medium uppercase tracking-wider">Active Leads</span>
+            <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-white" x-text="dashData.total_leads || '0'"></div>
+          <div class="text-xs text-emerald-400 mt-1" x-show="dashData.won_count">
+            <span x-text="dashData.won_count"></span> booked
+          </div>
+        </div>
+
+        <div class="metric-card bg-slate-900 border border-slate-800 rounded-xl p-4 cursor-pointer" @click="go('approvals')">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-500 font-medium uppercase tracking-wider">Approvals</span>
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-white" x-text="approvals.length"></div>
+          <div class="text-xs text-amber-400 mt-1" x-show="approvals.length > 0">Review now &rarr;</div>
+          <div class="text-xs text-slate-600 mt-1" x-show="approvals.length === 0">All clear</div>
+        </div>
+
+        <div class="metric-card bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-500 font-medium uppercase tracking-wider">Ad Spend</span>
+            <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-white" x-text="'$' + (adMetrics.spend || '0')"></div>
+          <div class="text-xs text-slate-500 mt-1" x-text="'CPL: $' + (adMetrics.cpl || '--')"></div>
+        </div>
+
+        <div class="metric-card bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs text-slate-500 font-medium uppercase tracking-wider">Revenue</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-white" x-text="'$' + formatNum(dashData.won_revenue || 0)"></div>
+          <div class="text-xs text-emerald-400 mt-1" x-text="(dashData.conversion_pct || 0) + '% conv.'"></div>
+        </div>
+      </div>
+
+      <!-- Pipeline Kanban -->
+      <div class="mb-6">
+        <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">Pipeline</h2>
+        <div class="overflow-x-auto -mx-4 px-4">
+          <div class="flex gap-3 min-w-max pb-2">
+            <template x-for="stage in pipelineStages" :key="stage.key">
+              <div class="kanban-col w-40 md:w-48 bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden flex-shrink-0">
+                <div class="px-3 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                  <span class="text-xs font-semibold" :class="'text-' + stage.color + '-400'" x-text="stage.label"></span>
+                  <span class="text-[10px] font-bold bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded-full"
+                        x-text="(pipeline[stage.key] || []).length"></span>
+                </div>
+                <div class="p-2 space-y-1.5 max-h-52 overflow-y-auto">
+                  <template x-for="lead in (pipeline[stage.key] || []).slice(0, 6)" :key="lead.id">
+                    <div class="bg-slate-800/60 rounded-lg p-2 cursor-pointer hover:bg-slate-800 transition-colors"
+                         @click="openLeadDetail(lead)">
+                      <div class="text-xs font-medium text-white truncate" x-text="lead.full_name || lead.first_name || 'Unknown'"></div>
+                      <div class="text-[10px] text-slate-500 mt-0.5" x-text="lead.source || ''"></div>
+                    </div>
+                  </template>
+                  <div x-show="!(pipeline[stage.key] || []).length" class="text-center py-4">
+                    <span class="text-[10px] text-slate-600">Empty</span>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions + Activity -->
+      <div class="grid md:grid-cols-3 gap-4">
+        <!-- Quick Actions -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Quick Actions</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <button @click="go('quotes')" class="flex items-center gap-2 px-3 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium text-slate-300 transition-colors">
+              <svg class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              New Quote
+            </button>
+            <button @click="showAddLead = true" class="flex items-center gap-2 px-3 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium text-slate-300 transition-colors">
+              <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+              Add Lead
+            </button>
+            <button @click="go('posting')" class="flex items-center gap-2 px-3 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium text-slate-300 transition-colors">
+              <svg class="w-3.5 h-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              Posting
+            </button>
+            <button @click="go('intelligence')" class="flex items-center gap-2 px-3 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium text-slate-300 transition-colors">
+              <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              Scraper
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent Activity</h3>
+          <div class="space-y-1.5 max-h-52 overflow-y-auto" x-show="activity.length">
+            <template x-for="(ev, i) in activity.slice(0, 20)" :key="i">
+              <div class="flex items-start gap-3 py-1.5 border-b border-slate-800/40 last:border-0">
+                <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                     :class="activityIconBg(ev)">
+                  <div x-html="activityIcon(ev)" class="w-3 h-3"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-xs text-slate-300" x-text="(ev.lead_name ? ev.lead_name + ' — ' : '') + (ev.details || ev.event_type || 'Activity')"></div>
+                  <div class="text-[10px] text-slate-600" x-text="timeAgo(ev.ts || ev.timestamp || ev.created_at)"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+          <div x-show="!activity.length" class="text-center py-8">
+            <svg class="w-8 h-8 text-slate-700 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <p class="text-xs text-slate-600">No recent activity</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== LEADS PAGE ====== -->
+    <section x-show="page==='leads'" x-cloak>
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold text-white">Leads</h1>
+        <button @click="showAddLead = true" class="flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-medium text-white transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"/></svg>
+          Add Lead
+        </button>
+      </div>
+
+      <!-- Search/Filter -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <div class="flex-1 min-w-[200px] relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" x-model="leadSearch" @input.debounce.300ms="searchLeads()"
+                 placeholder="Search leads..." class="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors">
+        </div>
+        <select x-model="leadStageFilter" @change="searchLeads()"
+                class="px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+          <option value="">All Stages</option>
+          <template x-for="s in pipelineStages" :key="s.key">
+            <option :value="s.key" x-text="s.label"></option>
+          </template>
+        </select>
+      </div>
+
+      <!-- Leads List -->
+      <div class="space-y-2" x-show="leads.length">
+        <template x-for="lead in leads" :key="lead.id">
+          <div @click="openLeadDetail(lead)" class="bg-slate-900 border border-slate-800 rounded-xl p-4 cursor-pointer hover:border-slate-700 transition-all">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center flex-shrink-0">
+                  <span class="text-xs font-bold text-white" x-text="(lead.first_name || lead.full_name || '?')[0].toUpperCase()"></span>
+                </div>
+                <div class="min-w-0">
+                  <div class="text-sm font-medium text-white truncate" x-text="lead.full_name || ((lead.first_name || '') + ' ' + (lead.last_name || '')).trim() || 'Unknown'"></div>
+                  <div class="text-xs text-slate-500 truncate" x-text="[lead.phone, lead.email].filter(Boolean).join(' | ') || 'No contact info'"></div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+                <span class="badge" :class="stageBadgeClass(lead.booking_status || lead.status)"
+                      x-text="stageLabelShort(lead.booking_status || lead.status)"></span>
+                <svg class="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Empty state -->
+      <div x-show="!leads.length && !loading.leads" class="text-center py-16">
+        <svg class="w-12 h-12 text-slate-700 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <p class="text-sm text-slate-500">No leads found</p>
+        <button @click="showAddLead = true" class="mt-3 text-xs text-blue-400 hover:text-blue-300">Add your first lead</button>
+      </div>
+
+      <!-- Loading -->
+      <div x-show="loading.leads" class="space-y-2">
+        <template x-for="i in 5" :key="i">
+          <div class="skeleton h-16 rounded-xl"></div>
+        </template>
+      </div>
+    </section>
+
+    <!-- ====== APPROVALS PAGE ====== -->
+    <section x-show="page==='approvals'" x-cloak>
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold text-white">Approvals</h1>
+        <button @click="loadApprovals()" class="text-xs text-slate-500 hover:text-slate-300 flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Refresh
+        </button>
+      </div>
+
+      <div class="space-y-3" x-show="approvals.length">
+        <template x-for="item in approvals" :key="item.id">
+          <div class="bg-slate-900 border rounded-xl p-4 animate-fade-in"
+               :class="approvalBorderClass(item)">
+            <div class="flex items-start justify-between mb-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-white" x-text="item.lead_name || 'Lead #' + item.lead_id"></span>
+                  <span class="badge bg-blue-500/20 text-blue-400" x-text="'Score ' + (item.score || '--')"></span>
+                  <span class="badge" :class="approvalUrgencyClass(item)" x-text="approvalUrgencyLabel(item)"></span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1 flex items-center gap-2">
+                  <span x-text="item.channel || 'sms'"></span>
+                  <span>&bull;</span>
+                  <span x-text="timeAgo(item.created_at || item.ts)"></span>
+                </div>
+              </div>
+            </div>
+            <div class="bg-slate-800/60 rounded-lg p-3 mb-3">
+              <p class="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed" x-text="item.proposed_message || item.message || item.content || 'No message preview'"></p>
+            </div>
+            <div class="flex gap-2">
+              <button @click="approveItem(item.id)" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-xs font-medium text-white transition-colors">
+                Approve
+              </button>
+              <button @click="approveEditMode = item.id; approveEditText = item.proposed_message || item.message || item.content || ''" class="py-2 px-3 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium text-slate-300 transition-colors">
+                Edit
+              </button>
+              <button @click="skipItem(item.id)" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-medium text-slate-400 transition-colors">
+                Skip
+              </button>
+            </div>
+            <!-- Edit mode -->
+            <div x-show="approveEditMode === item.id" class="mt-3 space-y-2">
+              <textarea x-model="approveEditText" rows="3"
+                        class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"></textarea>
+              <div class="flex gap-2">
+                <button @click="approveItem(item.id, approveEditText)" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-medium text-white transition-colors">
+                  Send Edited
+                </button>
+                <button @click="approveEditMode = null" class="py-2 px-3 bg-slate-800 rounded-lg text-xs text-slate-400">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <div x-show="!approvals.length && !loading.approvals" class="text-center py-16">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/10 flex items-center justify-center">
+          <svg class="w-8 h-8 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <p class="text-sm font-medium text-slate-400">All caught up!</p>
+        <p class="text-xs text-slate-600 mt-1">No pending approvals</p>
+      </div>
+    </section>
+
+    <!-- ====== POSTING PAGE ====== -->
+    <section x-show="page==='posting'" x-cloak>
+      <h1 class="text-xl font-bold text-white mb-4">Posting Engine</h1>
+
+      <!-- Platform Status Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+        <template x-for="p in postingPlatforms" :key="p.name">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="p.bgClass">
+                <span class="text-sm" x-text="p.emoji"></span>
+              </div>
+              <div>
+                <div class="text-xs font-medium text-white" x-text="p.name"></div>
+                <div class="text-[10px]" :class="p.active ? 'text-emerald-400' : 'text-slate-600'"
+                     x-text="p.active ? 'Active' : 'Inactive'"></div>
+              </div>
+            </div>
+            <div class="text-xs text-slate-500" x-text="p.detail"></div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Posting Status from API -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Status</h3>
+        <template x-if="postingStatus">
+          <div class="space-y-2">
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-500">Posts Today</span>
+              <span class="text-white font-medium" x-text="postingStatus.posts_today || 0"></span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-500">Next Post</span>
+              <span class="text-white font-medium" x-text="postingStatus.next_post || '--'"></span>
+            </div>
+            <div class="flex justify-between text-xs">
+              <span class="text-slate-500">Angle</span>
+              <span class="text-white font-medium" x-text="postingStatus.current_angle || '--'"></span>
+            </div>
+          </div>
+        </template>
+        <div x-show="!postingStatus" class="text-xs text-slate-600">Loading status...</div>
+      </div>
+
+      <!-- Marketplace Status -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Marketplace Posts</h3>
+        <div class="space-y-2" x-show="marketplacePosts.length">
+          <template x-for="post in marketplacePosts.slice(0, 10)" :key="post.id || post.post_id">
+            <div class="flex items-center justify-between py-1.5 border-b border-slate-800/40 last:border-0">
+              <div class="text-xs text-slate-300 truncate max-w-[60%]" x-text="post.title || post.angle || 'Post'"></div>
+              <span class="badge" :class="post.status === 'active' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'"
+                    x-text="post.status || 'unknown'"></span>
+            </div>
+          </template>
+        </div>
+        <div x-show="!marketplacePosts.length" class="text-xs text-slate-600 text-center py-4">No marketplace posts</div>
+      </div>
+    </section>
+
+    <!-- ====== ANALYTICS PAGE ====== -->
+    <section x-show="page==='analytics'" x-cloak x-init="$watch('page', v => { if(v==='analytics') initCharts() })">
+      <h1 class="text-xl font-bold text-white mb-4">Analytics</h1>
+
+      <!-- Key Metrics -->
+      <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">Total Leads</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="analyticsData.summary?.total_leads || dashData.total_leads || '0'"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">Ad Spend (30d)</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="'$' + formatNum(analyticsData.cpl?.total_spend || 0)"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">CPL</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="'$' + (analyticsData.cpl?.overall || adMetrics.cpl || '--')"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">Conversion Rate</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="(dashData.conversion_pct || 0) + '%'"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">Revenue</span>
+          <div class="text-xl font-bold text-emerald-400 mt-1" x-text="'$' + formatNum(dashData.won_revenue || 0)"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">ROI</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="analyticsData.cpl?.total_spend ? ((dashData.won_revenue || 0) / analyticsData.cpl.total_spend).toFixed(1) + 'x' : '--'"></div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Pipeline Funnel</h3>
+          <canvas id="funnelChart" height="200"></canvas>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Lead Sources</h3>
+          <canvas id="sourceChart" height="200"></canvas>
+        </div>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Leads Over Time</h3>
+        <canvas id="trendChart" height="160"></canvas>
+      </div>
+    </section>
+
+    <!-- ====== QUOTES PAGE ====== -->
+    <section x-show="page==='quotes'" x-cloak>
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold text-white">Quotes & Invoices</h1>
+        <button @click="showQuoteBuilder = !showQuoteBuilder" class="flex items-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-medium text-white transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"/></svg>
+          New Quote
+        </button>
+      </div>
+
+      <!-- Quote Builder -->
+      <div x-show="showQuoteBuilder" x-cloak class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4 animate-fade-in">
+        <h3 class="text-sm font-semibold text-white mb-3">Create Quote</h3>
+        <div class="grid md:grid-cols-2 gap-3">
+          <input x-model="quoteForm.client_name" placeholder="Client Name" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <input x-model="quoteForm.event_type" placeholder="Event Type" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <input x-model="quoteForm.event_date" type="date" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-blue-500">
+          <input x-model="quoteForm.event_location" placeholder="Location" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <input x-model="quoteForm.guest_count" type="number" placeholder="Guest Count" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <input x-model="quoteForm.price" type="number" placeholder="Price ($)" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <input x-model="quoteForm.client_email" type="email" placeholder="Client Email" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <input x-model="quoteForm.client_phone" placeholder="Client Phone" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+        </div>
+        <div class="flex items-center gap-4 mt-3">
+          <label class="flex items-center gap-2 text-xs text-slate-400">
+            <input type="checkbox" x-model="quoteForm.include_attendant" class="rounded bg-slate-800 border-slate-700 text-blue-500">
+            Attendant (+$200)
+          </label>
+          <label class="flex items-center gap-2 text-xs text-slate-400">
+            <input type="checkbox" x-model="quoteForm.include_premium" class="rounded bg-slate-800 border-slate-700 text-blue-500">
+            Premium (+$150)
+          </label>
+        </div>
+        <textarea x-model="quoteForm.notes" placeholder="Notes..." rows="2"
+                  class="w-full mt-3 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"></textarea>
+        <div class="flex gap-2 mt-3">
+          <button @click="createQuote()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-medium text-white transition-colors">Create Quote</button>
+          <button @click="showQuoteBuilder = false" class="px-4 py-2 bg-slate-800 rounded-lg text-xs text-slate-400">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Quotes List -->
+      <div class="space-y-2" x-show="quotes.length">
+        <template x-for="q in quotes" :key="q.id || q.quote_id">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-medium text-white" x-text="q.client_name || 'Unnamed'"></div>
+                <div class="text-xs text-slate-500 mt-0.5" x-text="[q.event_type, q.event_date].filter(Boolean).join(' | ')"></div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-bold text-white" x-text="'$' + (q.total || q.price || 0)"></div>
+                <span class="badge" :class="q.status === 'sent' ? 'bg-blue-500/20 text-blue-400' : q.status === 'accepted' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'"
+                      x-text="q.status || 'draft'"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </div>
+      <div x-show="!quotes.length && !loading.quotes" class="text-center py-16">
+        <svg class="w-12 h-12 text-slate-700 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <p class="text-sm text-slate-500">No quotes yet</p>
+      </div>
+    </section>
+
+    <!-- ====== INTELLIGENCE PAGE ====== -->
+    <section x-show="page==='intelligence'" x-cloak>
+      <h1 class="text-xl font-bold text-white mb-4">Intelligence</h1>
+
+      <!-- Scraper Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">Scraped</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="scraperStats.total_leads || scraperStats.total_scraped || 0"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">Hot Leads</span>
+          <div class="text-xl font-bold text-amber-400 mt-1" x-text="scraperStats.hot_leads || 0"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">Groups</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="scraperStats.total_groups || scraperStats.groups_monitored || 0"></div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+          <span class="text-[10px] text-slate-500 uppercase tracking-wider">DMs Sent</span>
+          <div class="text-xl font-bold text-white mt-1" x-text="scraperStats.contacted || scraperStats.dms_sent || 0"></div>
+        </div>
+      </div>
+
+      <!-- Scraped Leads -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Hot Leads</h3>
+        <div class="space-y-2" x-show="scrapedLeads.length">
+          <template x-for="lead in scrapedLeads.slice(0, 15)" :key="lead.id || lead.post_id">
+            <div class="flex items-center justify-between py-2 border-b border-slate-800/40 last:border-0">
+              <div class="min-w-0 flex-1">
+                <div class="text-xs font-medium text-white truncate" x-text="lead.name || lead.author || 'Unknown'"></div>
+                <div class="text-[10px] text-slate-500 truncate" x-text="lead.post_text || lead.content || ''"></div>
+              </div>
+              <span class="badge ml-2 flex-shrink-0"
+                    :class="(lead.score || 0) >= 8 ? 'bg-red-500/20 text-red-400' : (lead.score || 0) >= 6 ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700 text-slate-400'"
+                    x-text="(lead.score || 0) + '/10'"></span>
+            </div>
+          </template>
+        </div>
+        <div x-show="!scrapedLeads.length" class="text-center py-6 text-xs text-slate-600">No scraped leads</div>
+      </div>
+
+      <!-- Groups -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Monitored Groups</h3>
+        <div class="space-y-2" x-show="scraperGroups.length">
+          <template x-for="g in scraperGroups" :key="g.id || g.group_id || g.name">
+            <div class="flex items-center justify-between py-1.5">
+              <span class="text-xs text-slate-300" x-text="g.name || g.group_name || 'Group'"></span>
+              <span class="text-[10px] text-slate-500" x-text="(g.member_count || '--') + ' members'"></span>
+            </div>
+          </template>
+        </div>
+        <div x-show="!scraperGroups.length" class="text-center py-4 text-xs text-slate-600">No groups configured</div>
+      </div>
+    </section>
+
+    <!-- ====== PERSONAL PAGE ====== -->
+    <section x-show="page==='personal'" x-cloak>
+      <h1 class="text-xl font-bold text-white mb-4">Personal</h1>
+
+      <!-- Todos -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">To-Do List</h3>
+          <button @click="showAddTodo = !showAddTodo" class="text-xs text-blue-400 hover:text-blue-300">+ Add</button>
+        </div>
+        <div x-show="showAddTodo" class="flex gap-2 mb-3">
+          <input x-model="newTodo" @keydown.enter="addTodo()" placeholder="What needs to be done?"
+                 class="flex-1 px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+          <button @click="addTodo()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs text-white font-medium">Add</button>
+        </div>
+        <div class="space-y-1.5" x-show="todos.length">
+          <template x-for="todo in todos" :key="todo.id">
+            <div class="flex items-center gap-3 py-1.5">
+              <input type="checkbox" :checked="todo.done || todo.completed"
+                     class="rounded bg-slate-800 border-slate-700 text-blue-500 w-4 h-4">
+              <span class="text-xs flex-1" :class="(todo.done || todo.completed) ? 'text-slate-600 line-through' : 'text-slate-300'"
+                    x-text="todo.task || todo.text || todo.title"></span>
+              <span x-show="todo.priority" class="badge"
+                    :class="todo.priority === 'high' ? 'bg-red-500/20 text-red-400' : todo.priority === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700 text-slate-400'"
+                    x-text="todo.priority"></span>
+            </div>
+          </template>
+        </div>
+        <div x-show="!todos.length" class="text-center py-6 text-xs text-slate-600">No todos yet. Add one above.</div>
+      </div>
+
+      <!-- Health Tracker -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Health & Reminders</h3>
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-500">Water Intake</span>
+            <span class="text-cyan-400 font-medium" x-text="(healthData.water || 0) + ' glasses'"></span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-500">Steps</span>
+            <span class="text-emerald-400 font-medium" x-text="formatNum(healthData.steps || 0)"></span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-slate-500">Sleep</span>
+            <span class="text-purple-400 font-medium" x-text="(healthData.sleep || '--') + ' hrs'"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SETTINGS PAGE ====== -->
+    <section x-show="page==='settings'" x-cloak>
+      <h1 class="text-xl font-bold text-white mb-4">Settings</h1>
+
+      <!-- System Status -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">System Status</h3>
+        <div class="space-y-2">
+          <template x-for="(val, key) in healthChecks" :key="key">
+            <div class="flex items-center justify-between py-1.5 border-b border-slate-800/40 last:border-0">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full" :class="val.toString().startsWith('ok') || val.toString().startsWith('check') ? 'bg-emerald-400' : val.toString().startsWith('error') ? 'bg-red-400' : 'bg-amber-400'"></div>
+                <span class="text-xs text-slate-300 capitalize" x-text="key.replace(/_/g, ' ')"></span>
+              </div>
+              <span class="text-[10px] text-slate-500 max-w-[50%] text-right truncate" x-text="val"></span>
+            </div>
+          </template>
+        </div>
+        <div x-show="!Object.keys(healthChecks).length" class="text-xs text-slate-600 text-center py-4">Loading health checks...</div>
+      </div>
+
+      <!-- Integration Status -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Integrations</h3>
+        <div class="space-y-2">
+          <template x-for="svc in services" :key="svc.name">
+            <div class="flex items-center justify-between py-1.5">
+              <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full" :class="svc.status === 'active' || svc.status === 'ok' ? 'bg-emerald-400' : svc.status === 'error' ? 'bg-red-400' : 'bg-slate-600'"></div>
+                <span class="text-xs text-slate-300" x-text="svc.name"></span>
+              </div>
+              <span class="text-[10px] text-slate-500" x-text="svc.status || 'unknown'"></span>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Notifications</h3>
+        <div class="space-y-3">
+          <label class="flex items-center justify-between">
+            <span class="text-xs text-slate-400">Approval Alerts</span>
+            <div class="relative">
+              <input type="checkbox" checked class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-700 peer-checked:bg-blue-600 rounded-full transition-colors cursor-pointer"></div>
+            </div>
+          </label>
+          <label class="flex items-center justify-between">
+            <span class="text-xs text-slate-400">Daily Reports</span>
+            <div class="relative">
+              <input type="checkbox" checked class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-700 peer-checked:bg-blue-600 rounded-full transition-colors cursor-pointer"></div>
+            </div>
+          </label>
+          <label class="flex items-center justify-between">
+            <span class="text-xs text-slate-400">Lead Notifications</span>
+            <div class="relative">
+              <input type="checkbox" checked class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-700 peer-checked:bg-blue-600 rounded-full transition-colors cursor-pointer"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== COMPETITORS PAGE ====== -->
+    <section x-show="page==='competitors'" x-cloak>
+      <h1 class="text-xl font-bold text-white mb-4">Competitors</h1>
+
+      <!-- Competitor List -->
+      <div class="space-y-3" x-show="competitors.length">
+        <template x-for="c in competitors" :key="c.id || c.name">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-2">
+              <div class="text-sm font-medium text-white" x-text="c.name || c.business_name || 'Unknown'"></div>
+              <span class="badge" :class="c.threat_level === 'high' ? 'bg-red-500/20 text-red-400' : c.threat_level === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-700 text-slate-400'"
+                    x-text="(c.threat_level || 'low') + ' threat'"></span>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div>
+                <div class="text-[10px] text-slate-500">Price</div>
+                <div class="text-xs font-medium text-white" x-text="c.price_range || c.pricing || '--'"></div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-500">Rating</div>
+                <div class="text-xs font-medium text-amber-400" x-text="c.rating ? c.rating + '/5' : '--'"></div>
+              </div>
+              <div>
+                <div class="text-[10px] text-slate-500">Reviews</div>
+                <div class="text-xs font-medium text-white" x-text="c.review_count || c.reviews || '--'"></div>
+              </div>
+            </div>
+            <div x-show="c.notes || c.strengths" class="mt-2 text-[10px] text-slate-500" x-text="c.notes || c.strengths || ''"></div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Alerts -->
+      <div class="mt-4 bg-slate-900 border border-slate-800 rounded-xl p-4" x-show="competitorAlerts.length">
+        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent Alerts</h3>
+        <div class="space-y-2">
+          <template x-for="alert in competitorAlerts.slice(0, 10)" :key="alert.id">
+            <div class="flex items-start gap-2 py-1.5 border-b border-slate-800/40 last:border-0">
+              <div class="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 flex-shrink-0"></div>
+              <div>
+                <div class="text-xs text-slate-300" x-text="alert.message || alert.text || 'Alert'"></div>
+                <div class="text-[10px] text-slate-600" x-text="timeAgo(alert.ts || alert.created_at)"></div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div x-show="!competitors.length && !loading.competitors" class="text-center py-16">
+        <svg class="w-12 h-12 text-slate-700 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p class="text-sm text-slate-500">No competitors tracked</p>
+      </div>
+    </section>
+
+  </div><!-- /content padding -->
+</main>
+
+<!-- ====== LEAD DETAIL SLIDE-OVER ====== -->
+<div x-show="selectedLead" x-cloak
+     class="fixed inset-0 z-50" @click.self="selectedLead = null">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="selectedLead = null"></div>
+  <div class="absolute right-0 top-0 bottom-0 w-full md:w-96 bg-slate-900 border-l border-slate-800 overflow-y-auto animate-slide-in">
+    <div class="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 px-4 py-3 flex items-center justify-between z-10">
+      <h2 class="text-sm font-bold text-white" x-text="selectedLead?.full_name || selectedLead?.first_name || 'Lead Detail'"></h2>
+      <button @click="selectedLead = null" class="p-1 hover:bg-slate-800 rounded-lg transition-colors">
+        <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <template x-if="selectedLead">
+      <div class="p-4 space-y-4">
+        <!-- Contact Info -->
+        <div class="space-y-2">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center">
+              <span class="text-lg font-bold text-white" x-text="(selectedLead.first_name || selectedLead.full_name || '?')[0].toUpperCase()"></span>
+            </div>
+            <div>
+              <div class="text-base font-medium text-white" x-text="selectedLead.full_name || ((selectedLead.first_name || '') + ' ' + (selectedLead.last_name || '')).trim()"></div>
+              <span class="badge" :class="stageBadgeClass(selectedLead.booking_status || selectedLead.status)"
+                    x-text="stageLabelShort(selectedLead.booking_status || selectedLead.status)"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="bg-slate-800/50 rounded-lg p-3 space-y-2">
+          <div class="flex justify-between text-xs" x-show="selectedLead.phone">
+            <span class="text-slate-500">Phone</span>
+            <a :href="'tel:' + selectedLead.phone" class="text-blue-400" x-text="selectedLead.phone"></a>
+          </div>
+          <div class="flex justify-between text-xs" x-show="selectedLead.email">
+            <span class="text-slate-500">Email</span>
+            <span class="text-slate-300" x-text="selectedLead.email"></span>
+          </div>
+          <div class="flex justify-between text-xs" x-show="selectedLead.source">
+            <span class="text-slate-500">Source</span>
+            <span class="text-slate-300" x-text="selectedLead.source"></span>
+          </div>
+          <div class="flex justify-between text-xs" x-show="selectedLead.business_name">
+            <span class="text-slate-500">Business</span>
+            <span class="text-slate-300" x-text="selectedLead.business_name"></span>
+          </div>
+          <div class="flex justify-between text-xs" x-show="selectedLead.total_quote_amount">
+            <span class="text-slate-500">Quote Value</span>
+            <span class="text-emerald-400 font-medium" x-text="'$' + selectedLead.total_quote_amount"></span>
+          </div>
+          <div class="flex justify-between text-xs" x-show="selectedLead.event_date">
+            <span class="text-slate-500">Event Date</span>
+            <span class="text-slate-300" x-text="selectedLead.event_date"></span>
+          </div>
+          <div class="flex justify-between text-xs" x-show="selectedLead.created_at">
+            <span class="text-slate-500">Created</span>
+            <span class="text-slate-300" x-text="timeAgo(selectedLead.created_at)"></span>
+          </div>
+        </div>
+
+        <!-- Stage Change -->
+        <div>
+          <label class="text-[10px] text-slate-500 uppercase tracking-wider block mb-1">Move to Stage</label>
+          <select @change="changeLeadStage(selectedLead.id, $event.target.value)"
+                  class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-blue-500">
+            <option value="">Select stage...</option>
+            <template x-for="s in pipelineStages" :key="s.key">
+              <option :value="s.key" :selected="(selectedLead.booking_status || selectedLead.status) === s.key" x-text="s.label"></option>
+            </template>
+          </select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 gap-2">
+          <button @click="leadAction(selectedLead.id, 'follow_up')" class="py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-medium text-white transition-colors">Follow Up</button>
+          <button @click="leadAction(selectedLead.id, 'mark_replied')" class="py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-xs font-medium text-white transition-colors">Mark Replied</button>
+          <button @click="leadAction(selectedLead.id, 'close')" class="py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-medium text-slate-300 transition-colors">Close</button>
+          <button @click="leadAction(selectedLead.id, 'opt_out')" class="py-2 bg-red-600/20 hover:bg-red-600/30 rounded-lg text-xs font-medium text-red-400 transition-colors">Opt Out</button>
+        </div>
+
+        <!-- Conversation History -->
+        <div>
+          <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Messages</h4>
+          <div class="space-y-2 max-h-64 overflow-y-auto" x-show="leadMessages.length">
+            <template x-for="msg in leadMessages" :key="msg.id">
+              <div class="px-3 py-2 rounded-lg text-xs"
+                   :class="msg.direction === 'outbound' ? 'bg-blue-600/20 text-blue-200 ml-4' : 'bg-slate-800 text-slate-300 mr-4'">
+                <div class="whitespace-pre-wrap" x-text="msg.content || msg.message || msg.text"></div>
+                <div class="text-[10px] mt-1 opacity-50" x-text="[msg.channel, timeAgo(msg.ts || msg.created_at)].filter(Boolean).join(' | ')"></div>
+              </div>
+            </template>
+          </div>
+          <div x-show="!leadMessages.length" class="text-center py-4 text-xs text-slate-600">No messages yet</div>
+        </div>
+
+        <!-- Notes -->
+        <div x-show="selectedLead.notes">
+          <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Notes</h4>
+          <p class="text-xs text-slate-400 bg-slate-800/50 rounded-lg p-3 whitespace-pre-wrap" x-text="selectedLead.notes"></p>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>
+
+<!-- ====== ADD LEAD MODAL ====== -->
+<div x-show="showAddLead" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4" @click.self="showAddLead = false">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+  <div class="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 w-full max-w-md animate-fade-in">
+    <h2 class="text-base font-bold text-white mb-4">Add New Lead</h2>
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <input x-model="newLeadForm.first_name" placeholder="First Name" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+        <input x-model="newLeadForm.last_name" placeholder="Last Name" class="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+      </div>
+      <input x-model="newLeadForm.phone" placeholder="Phone" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+      <input x-model="newLeadForm.email" type="email" placeholder="Email" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+      <select x-model="newLeadForm.source" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+        <option value="manual">Manual</option>
+        <option value="website">Website</option>
+        <option value="facebook">Facebook</option>
+        <option value="referral">Referral</option>
+        <option value="the_knot">The Knot</option>
+        <option value="weddingwire">WeddingWire</option>
+        <option value="instagram">Instagram</option>
+        <option value="google">Google</option>
+      </select>
+      <textarea x-model="newLeadForm.notes" placeholder="Notes..." rows="2" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"></textarea>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button @click="addLead()" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium text-white transition-colors">Add Lead</button>
+      <button @click="showAddLead = false" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm text-slate-400 transition-colors">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== TOAST NOTIFICATION ====== -->
+<div x-show="toast.show" x-cloak
+     x-transition:enter="transition ease-out duration-200"
+     x-transition:enter-start="opacity-0 translate-y-2"
+     x-transition:enter-end="opacity-100 translate-y-0"
+     x-transition:leave="transition ease-in duration-150"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed top-4 right-4 z-[100] max-w-sm">
+  <div class="rounded-xl px-4 py-3 shadow-2xl border flex items-center gap-2"
+       :class="toast.type === 'success' ? 'bg-emerald-900/90 border-emerald-700 text-emerald-200' :
+               toast.type === 'error' ? 'bg-red-900/90 border-red-700 text-red-200' :
+               'bg-slate-800/90 border-slate-700 text-slate-200'">
+    <svg x-show="toast.type==='success'" class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+    <svg x-show="toast.type==='error'" class="w-4 h-4 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+    <span class="text-xs font-medium" x-text="toast.message"></span>
+  </div>
+</div>
+
+
+<!-- ====== ALPINE.JS APP ====== -->
+<script>
+const API = 'http://localhost:7860';
+
+function nexusApp() {
+  return {
+    // ── State ──
+    page: 'home',
+    loading: { leads: false, approvals: false, quotes: false, competitors: false },
+    toast: { show: false, message: '', type: 'info' },
+
+    // Health
+    healthStatus: 'unknown',
+    healthChecks: {},
+    currentTime: '',
+
+    // Home
+    dashData: {},
+    pipeline: {},
+    adMetrics: {},
+    activity: [],
+
+    // Leads
+    leads: [],
+    leadSearch: '',
+    leadStageFilter: '',
+    selectedLead: null,
+    leadMessages: [],
+    showAddLead: false,
+    newLeadForm: { first_name: '', last_name: '', phone: '', email: '', source: 'manual', notes: '' },
+
+    // Approvals
+    approvals: [],
+    approvalStats: {},
+    approveEditMode: null,
+    approveEditText: '',
+
+    // Posting
+    postingStatus: null,
+    marketplacePosts: [],
+    postingPlatforms: [
+      { name: 'FB Marketplace', emoji: '🏪', bgClass: 'bg-blue-500/10', active: true, detail: 'Auto-posting active' },
+      { name: 'Craigslist', emoji: '📋', bgClass: 'bg-orange-500/10', active: true, detail: 'EN + ES posting' },
+      { name: 'Instagram', emoji: '📸', bgClass: 'bg-pink-500/10', active: true, detail: 'Reels & stories' },
+      { name: 'Facebook Page', emoji: '📘', bgClass: 'bg-blue-600/10', active: true, detail: 'Organic posts' },
+      { name: 'Google Business', emoji: '📍', bgClass: 'bg-emerald-500/10', active: true, detail: 'GBP updates' },
+      { name: 'The Knot', emoji: '💍', bgClass: 'bg-purple-500/10', active: false, detail: 'Manual posting' },
+    ],
+
+    // Analytics
+    analyticsData: {},
+    charts: {},
+
+    // Quotes
+    quotes: [],
+    showQuoteBuilder: false,
+    quoteForm: { client_name: '', event_type: '', event_date: '', event_location: '', guest_count: '', price: '1100', client_email: '', client_phone: '', include_attendant: false, include_premium: false, notes: '' },
+
+    // Intelligence
+    scraperStats: {},
+    scrapedLeads: [],
+    scraperGroups: [],
+
+    // Personal
+    todos: [],
+    showAddTodo: false,
+    newTodo: '',
+    healthData: { water: 0, steps: 0, sleep: '--' },
+
+    // Competitors
+    competitors: [],
+    competitorAlerts: [],
+
+    // Settings
+    services: [],
+
+    // Pipeline stages config
+    pipelineStages: [
+      { key: 'new_lead', label: 'New Lead', color: 'blue' },
+      { key: 'auto_contacted', label: 'Contacted', color: 'cyan' },
+      { key: 'qualifying', label: 'Qualifying', color: 'yellow' },
+      { key: 'quote_sent', label: 'Quote Sent', color: 'purple' },
+      { key: 'deposit_pending', label: 'Deposit', color: 'orange' },
+      { key: 'booked', label: 'Booked', color: 'green' },
+      { key: 'completed', label: 'Completed', color: 'emerald' },
+      { key: 'lost', label: 'Lost', color: 'red' },
+    ],
+
+    // Navigation
+    get sidebarNav() {
+      return [
+        { page: 'home', label: 'Home', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>', badge: null },
+        { page: 'leads', label: 'Leads', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>', badge: () => this.dashData.total_leads || null },
+        { page: 'approvals', label: 'Approvals', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>', badge: () => this.approvals.length || null },
+        { page: 'posting', label: 'Posting', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>', badge: null },
+        { page: 'analytics', label: 'Analytics', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>', badge: null },
+        { page: 'quotes', label: 'Quotes', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>', badge: null },
+        { page: 'intelligence', label: 'Intel', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>', badge: null },
+        { page: 'personal', label: 'Personal', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>', badge: null },
+        { page: 'competitors', label: 'Competitors', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>', badge: null },
+        { page: 'settings', label: 'Settings', icon: '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>', badge: null },
+      ];
+    },
+
+    get mobileNav() {
+      return [
+        { page: 'home', label: 'Home', icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>' },
+        { page: 'leads', label: 'Leads', icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>' },
+        { page: 'approvals', label: 'Approvals', icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' },
+        { page: 'analytics', label: 'Analytics', icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>' },
+        { page: 'settings', label: 'More', icon: '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>' },
+      ];
+    },
+
+    get healthColor() {
+      if (this.healthStatus === 'ok') return 'bg-emerald-400 animate-pulse-slow';
+      if (this.healthStatus === 'degraded') return 'bg-amber-400';
+      if (this.healthStatus === 'error') return 'bg-red-400';
+      return 'bg-slate-600';
+    },
+
+    get healthLabel() {
+      if (this.healthStatus === 'ok') return 'Operational';
+      if (this.healthStatus === 'degraded') return 'Degraded';
+      if (this.healthStatus === 'error') return 'Issues detected';
+      return 'Checking...';
+    },
+
+    get greetingText() {
+      const h = new Date().getHours();
+      const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      return g + ', Kai. Here\'s your business at a glance.';
+    },
+
+    // ── Init ──
+    async init() {
+      this.updateClock();
+      setInterval(() => this.updateClock(), 30000);
+
+      // Load all data
+      await Promise.all([
+        this.loadHealth(),
+        this.loadDashboard(),
+        this.loadPipeline(),
+        this.loadApprovals(),
+        this.loadAdMetrics(),
+        this.loadActivity(),
+      ]);
+
+      // Auto-refresh every 30s
+      setInterval(() => {
+        this.loadHealth();
+        this.loadDashboard();
+        this.loadApprovals();
+        this.loadActivity();
+      }, 30000);
+
+      // Handle browser back/forward
+      window.addEventListener('popstate', () => {
+        const p = location.hash.replace('#', '') || 'home';
+        this.page = p;
+      });
+      const hash = location.hash.replace('#', '');
+      if (hash) this.page = hash;
+    },
+
+    // ── Navigation ──
+    go(p) {
+      this.page = p;
+      location.hash = p;
+      window.scrollTo(0, 0);
+
+      // Lazy load page data
+      if (p === 'leads' && !this.leads.length) this.searchLeads();
+      if (p === 'posting') { this.loadPostingStatus(); this.loadMarketplacePosts(); }
+      if (p === 'analytics') { this.loadAnalytics(); }
+      if (p === 'quotes' && !this.quotes.length) this.loadQuotes();
+      if (p === 'intelligence') { this.loadScraperData(); }
+      if (p === 'personal') this.loadTodos();
+      if (p === 'settings') { this.loadServices(); }
+      if (p === 'competitors') this.loadCompetitors();
+    },
+
+    updateClock() {
+      const now = new Date();
+      this.currentTime = now.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    },
+
+    // ── API Helpers ──
+    async apiFetch(path, opts = {}) {
+      try {
+        const res = await fetch(API + path, {
+          headers: { 'Content-Type': 'application/json' },
+          ...opts,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (e) {
+        console.warn(`API ${path}:`, e.message);
+        return null;
+      }
+    },
+
+    async apiPost(path, body) {
+      return this.apiFetch(path, { method: 'POST', body: JSON.stringify(body) });
+    },
+
+    showToast(message, type = 'info') {
+      this.toast = { show: true, message, type };
+      setTimeout(() => this.toast.show = false, 3000);
+    },
+
+    formatNum(n) {
+      if (!n) return '0';
+      return Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 });
+    },
+
+    timeAgo(ts) {
+      if (!ts) return '';
+      const now = Date.now();
+      const then = new Date(ts).getTime();
+      const diff = Math.max(0, now - then);
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      const days = Math.floor(hrs / 24);
+      if (days < 30) return days + 'd ago';
+      return Math.floor(days / 30) + 'mo ago';
+    },
+
+    // ── Data Loaders ──
+    async loadHealth() {
+      const data = await this.apiFetch('/api/health');
+      if (data) {
+        this.healthChecks = data.checks || data;
+        const vals = Object.values(this.healthChecks).map(v => v.toString());
+        const hasError = vals.some(v => v.includes('error'));
+        if (hasError) {
+          this.healthStatus = 'error';
+        } else if (typeof data.healthy === 'boolean') {
+          this.healthStatus = data.healthy ? 'ok' : 'degraded';
+        } else {
+          const allOk = vals.every(v => v.includes('ok') || v.includes('check'));
+          this.healthStatus = allOk ? 'ok' : 'degraded';
+        }
+      }
+    },
+
+    async loadDashboard() {
+      const data = await this.apiFetch('/api/crm/dashboard');
+      if (data) this.dashData = data;
+    },
+
+    async loadPipeline() {
+      const data = await this.apiFetch('/api/crm/leads/pipeline');
+      if (data && data.pipeline) this.pipeline = data.pipeline;
+    },
+
+    async loadApprovals() {
+      const data = await this.apiFetch('/api/approvals');
+      if (data) {
+        this.approvals = data.pending || [];
+        this.approvalStats = data.stats || {};
+      }
+    },
+
+    async loadAdMetrics() {
+      const data = await this.apiFetch('/api/ads/metrics?period=today');
+      if (data) this.adMetrics = data;
+    },
+
+    async loadActivity() {
+      const data = await this.apiFetch('/api/crm/activity');
+      if (data) this.activity = Array.isArray(data) ? data : data.events || data.activity || [];
+    },
+
+    async searchLeads() {
+      this.loading.leads = true;
+      const q = encodeURIComponent(this.leadSearch);
+      const s = encodeURIComponent(this.leadStageFilter);
+      const data = await this.apiFetch(`/api/crm/leads?q=${q}&status=${s}&limit=50`);
+      if (data) this.leads = data.leads || [];
+      this.loading.leads = false;
+    },
+
+    async openLeadDetail(lead) {
+      this.selectedLead = lead;
+      this.leadMessages = [];
+      const data = await this.apiFetch(`/api/crm/conversations/${lead.id}/messages`);
+      if (data) this.leadMessages = data.messages || [];
+    },
+
+    async addLead() {
+      const f = this.newLeadForm;
+      if (!f.first_name && !f.phone) { this.showToast('Name or phone required', 'error'); return; }
+      const data = await this.apiPost('/api/leads/add', f);
+      if (data && data.ok) {
+        this.showToast('Lead added!', 'success');
+        this.showAddLead = false;
+        this.newLeadForm = { first_name: '', last_name: '', phone: '', email: '', source: 'manual', notes: '' };
+        this.searchLeads();
+        this.loadDashboard();
+        this.loadPipeline();
+      } else {
+        this.showToast('Failed to add lead', 'error');
+      }
+    },
+
+    async leadAction(leadId, action) {
+      const data = await this.apiPost(`/api/leads/${leadId}/action`, { action });
+      if (data && data.ok) {
+        this.showToast(`Action "${action}" completed`, 'success');
+        this.selectedLead = null;
+        this.searchLeads();
+        this.loadPipeline();
+      } else {
+        this.showToast('Action failed', 'error');
+      }
+    },
+
+    async changeLeadStage(leadId, stage) {
+      if (!stage) return;
+      const data = await this.apiPost(`/api/crm/leads/${leadId}/stage`, { booking_status: stage });
+      if (data) {
+        this.showToast('Stage updated', 'success');
+        if (this.selectedLead) this.selectedLead.booking_status = stage;
+        this.loadPipeline();
+        this.loadDashboard();
+      }
+    },
+
+    async approveItem(id, customText) {
+      const body = customText ? { custom_text: customText } : {};
+      const data = await this.apiPost(`/api/approvals/${id}/approve`, body);
+      if (data) {
+        this.showToast('Approved!', 'success');
+        this.approveEditMode = null;
+        this.loadApprovals();
+      } else {
+        this.showToast('Approve failed', 'error');
+      }
+    },
+
+    async skipItem(id) {
+      const data = await this.apiPost(`/api/approvals/${id}/skip`, {});
+      if (data) {
+        this.showToast('Skipped', 'info');
+        this.loadApprovals();
+      }
+    },
+
+    async loadPostingStatus() {
+      const data = await this.apiFetch('/api/posting/status');
+      if (data) this.postingStatus = data;
+    },
+
+    async loadMarketplacePosts() {
+      const data = await this.apiFetch('/api/marketplace/posts');
+      if (data) this.marketplacePosts = Array.isArray(data) ? data : data.posts || [];
+    },
+
+    async loadAnalytics() {
+      const data = await this.apiFetch('/api/analytics/dashboard');
+      if (data) this.analyticsData = data;
+    },
+
+    async loadQuotes() {
+      this.loading.quotes = true;
+      const data = await this.apiFetch('/api/quotes');
+      if (data) this.quotes = Array.isArray(data) ? data : data.quotes || [];
+      this.loading.quotes = false;
+    },
+
+    async createQuote() {
+      const f = this.quoteForm;
+      if (!f.client_name) { this.showToast('Client name required', 'error'); return; }
+      const body = { ...f, guest_count: parseInt(f.guest_count) || 0, price: parseFloat(f.price) || 1100 };
+      const data = await this.apiPost('/api/quotes/create', body);
+      if (data) {
+        this.showToast('Quote created!', 'success');
+        this.showQuoteBuilder = false;
+        this.quoteForm = { client_name: '', event_type: '', event_date: '', event_location: '', guest_count: '', price: '1100', client_email: '', client_phone: '', include_attendant: false, include_premium: false, notes: '' };
+        this.loadQuotes();
+      } else {
+        this.showToast('Failed to create quote', 'error');
+      }
+    },
+
+    async loadScraperData() {
+      const [stats, leads, groups] = await Promise.all([
+        this.apiFetch('/api/scraper/stats'),
+        this.apiFetch('/api/scraper/leads?min_score=5'),
+        this.apiFetch('/api/scraper/groups'),
+      ]);
+      if (stats) this.scraperStats = stats;
+      if (leads) this.scrapedLeads = leads.leads || [];
+      if (groups) this.scraperGroups = groups.groups || [];
+    },
+
+    async loadTodos() {
+      const data = await this.apiFetch('/api/assistant/todos');
+      if (data) this.todos = Array.isArray(data) ? data : data.todos || [];
+    },
+
+    async addTodo() {
+      if (!this.newTodo.trim()) return;
+      const data = await this.apiPost('/api/assistant/todos', { task: this.newTodo, priority: 'medium' });
+      if (data) {
+        this.showToast('Todo added', 'success');
+        this.newTodo = '';
+        this.loadTodos();
+      }
+    },
+
+    async loadServices() {
+      const data = await this.apiFetch('/api/services');
+      if (data) this.services = Array.isArray(data) ? data : data.services || [];
+    },
+
+    async loadCompetitors() {
+      this.loading.competitors = true;
+      const [comp, alerts] = await Promise.all([
+        this.apiFetch('/api/competitors'),
+        this.apiFetch('/api/competitors/alerts'),
+      ]);
+      if (comp) this.competitors = comp.competitors || [];
+      if (alerts) this.competitorAlerts = alerts.alerts || [];
+      this.loading.competitors = false;
+    },
+
+    // ── Charts ──
+    initCharts() {
+      this.$nextTick(() => {
+        // Destroy old charts
+        Object.values(this.charts).forEach(c => { try { c.destroy(); } catch(e) {} });
+        this.charts = {};
+
+        const chartDefaults = {
+          color: '#94a3b8',
+          borderColor: '#1e293b',
+          font: { family: 'Inter' },
+        };
+
+        // Funnel Chart
+        const funnelEl = document.getElementById('funnelChart');
+        if (funnelEl) {
+          const stages = this.pipelineStages.filter(s => s.key !== 'lost');
+          const counts = stages.map(s => (this.dashData.stage_counts || {})[s.key] || 0);
+          const colors = ['#3b82f6','#06b6d4','#eab308','#a855f7','#f97316','#22c55e','#10b981'];
+          this.charts.funnel = new Chart(funnelEl, {
+            type: 'bar',
+            data: { labels: stages.map(s => s.label), datasets: [{ data: counts, backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
+            options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { size: 10 } } }, y: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } } },
+          });
+        }
+
+        // Source Chart (doughnut)
+        const sourceEl = document.getElementById('sourceChart');
+        if (sourceEl) {
+          const sc = this.dashData.stage_counts || {};
+          const labels = Object.keys(sc).filter(k => k !== 'lost');
+          const vals = labels.map(k => sc[k]);
+          const palette = ['#3b82f6','#06b6d4','#eab308','#a855f7','#f97316','#22c55e','#10b981','#ef4444'];
+          this.charts.source = new Chart(sourceEl, {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data: vals, backgroundColor: palette.slice(0, labels.length), borderWidth: 0 }] },
+            options: { responsive: true, cutout: '65%', plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, padding: 12, usePointStyle: true, pointStyleWidth: 8 } } } },
+          });
+        }
+
+        // Trend line chart
+        const trendEl = document.getElementById('trendChart');
+        if (trendEl) {
+          const trend = (this.analyticsData.trends?.leads_daily || this.analyticsData.trend || []);
+          const labels = trend.map(t => t.date || t.day || '');
+          const vals = trend.map(t => t.count || t.leads || 0);
+          if (labels.length > 0) {
+            this.charts.trend = new Chart(trendEl, {
+              type: 'line',
+              data: { labels, datasets: [{ label: 'Leads', data: vals, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2 }] },
+              options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 10 }, maxTicksLimit: 10 } }, y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { size: 10 } } } } },
+            });
+          }
+        }
+      });
+    },
+
+    // ── UI Helpers ──
+    stageBadgeClass(stage) {
+      const map = {
+        new_lead: 'bg-blue-500/20 text-blue-400',
+        auto_contacted: 'bg-cyan-500/20 text-cyan-400',
+        qualifying: 'bg-yellow-500/20 text-yellow-400',
+        quote_sent: 'bg-purple-500/20 text-purple-400',
+        deposit_pending: 'bg-orange-500/20 text-orange-400',
+        booked: 'bg-emerald-500/20 text-emerald-400',
+        completed: 'bg-emerald-500/20 text-emerald-300',
+        delivered: 'bg-emerald-500/20 text-emerald-300',
+        lost: 'bg-red-500/20 text-red-400',
+        new: 'bg-blue-500/20 text-blue-400',
+        contacted: 'bg-cyan-500/20 text-cyan-400',
+        replied: 'bg-green-500/20 text-green-400',
+        opted_out: 'bg-red-500/20 text-red-400',
+        closed: 'bg-slate-500/20 text-slate-400',
+      };
+      return map[stage] || 'bg-slate-700 text-slate-400';
+    },
+
+    stageLabelShort(stage) {
+      const map = {
+        new_lead: 'New', auto_contacted: 'Contacted', qualifying: 'Qualifying',
+        quote_sent: 'Quote Sent', deposit_pending: 'Deposit', booked: 'Booked',
+        completed: 'Completed', delivered: 'Delivered', lost: 'Lost',
+        new: 'New', contacted: 'Contacted', replied: 'Replied',
+        opted_out: 'Opted Out', closed: 'Closed',
+      };
+      return map[stage] || stage || 'Unknown';
+    },
+
+    approvalBorderClass(item) {
+      const mins = this.minutesWaiting(item);
+      if (mins > 120) return 'border-red-500/50';
+      if (mins > 60) return 'border-amber-500/50';
+      return 'border-slate-800';
+    },
+
+    approvalUrgencyClass(item) {
+      const mins = this.minutesWaiting(item);
+      if (mins > 120) return 'bg-red-500/20 text-red-400';
+      if (mins > 60) return 'bg-amber-500/20 text-amber-400';
+      return 'bg-slate-700 text-slate-400';
+    },
+
+    approvalUrgencyLabel(item) {
+      const mins = this.minutesWaiting(item);
+      if (mins > 120) return 'Urgent';
+      if (mins > 60) return 'Waiting';
+      return 'Fresh';
+    },
+
+    minutesWaiting(item) {
+      const ts = item.created_at || item.ts;
+      if (!ts) return 0;
+      return Math.floor((Date.now() - new Date(ts).getTime()) / 60000);
+    },
+
+    activityIconBg(ev) {
+      const t = (ev.type || ev.event_type || '').toLowerCase();
+      if (t.includes('lead') || t.includes('new')) return 'bg-blue-500/10';
+      if (t.includes('message') || t.includes('sms') || t.includes('email')) return 'bg-cyan-500/10';
+      if (t.includes('quote')) return 'bg-purple-500/10';
+      if (t.includes('book') || t.includes('deposit')) return 'bg-emerald-500/10';
+      if (t.includes('follow')) return 'bg-amber-500/10';
+      return 'bg-slate-800';
+    },
+
+    activityIcon(ev) {
+      const t = (ev.type || ev.event_type || '').toLowerCase();
+      if (t.includes('lead') || t.includes('new'))
+        return '<svg class="w-3 h-3 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>';
+      if (t.includes('message') || t.includes('sms'))
+        return '<svg class="w-3 h-3 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>';
+      if (t.includes('quote'))
+        return '<svg class="w-3 h-3 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>';
+      return '<svg class="w-3 h-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>';
+    },
+  };
+}
+</script>
+
+</body>
+</html>

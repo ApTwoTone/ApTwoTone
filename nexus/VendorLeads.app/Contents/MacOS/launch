@@ -1,0 +1,9 @@
+#!/bin/bash
+# Vendor Leads — macOS app launcher
+# Activates the Nexus venv and launches the pywebview dashboard
+
+NEXUS_DIR="$HOME/nexus"
+VENV_PYTHON="$NEXUS_DIR/venv/bin/python3"
+
+cd "$NEXUS_DIR"
+exec "$VENV_PYTHON" "$NEXUS_DIR/scripts/vendor_leads_app.py"

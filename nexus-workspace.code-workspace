@@ -1,0 +1,48 @@
+{
+  "folders": [
+    {
+      "name": "Nexus Backend (Python)",
+      "path": "nexus"
+    },
+    {
+      "name": "Nexus Network (Next.js + Tauri)",
+      "path": "nexus-network"
+    },
+    {
+      "name": "Zoar Website",
+      "path": "zoar-website"
+    }
+  ],
+  "settings": {
+    "window.title": "Nexus Access Mirror",
+    "python.defaultInterpreterPath": "${workspaceFolder:Nexus Backend (Python)}/venv/bin/python",
+    "python.analysis.typeCheckingMode": "basic",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/__pycache__": true,
+      "**/venv": true,
+      "**/.next": true,
+      "**/out": true,
+      "**/target": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/venv": true,
+      "**/.next": true,
+      "**/out": true,
+      "**/target": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.vscode-pylance",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "tauri-apps.tauri-vscode"
+    ]
+  }
+}

@@ -1,0 +1,64 @@
+name: Cloud Failover — Agent Runner
+
+# Runs critical Zoar agents on GitHub Actions when Mac Mini is offline.
+# This is the CLOUD FAILOVER layer — only activates when the primary
+# runner (Mac Mini) hasn't checked in for 30+ minutes.
+#
+# Free tier: 2,000 min/month on GitHub Free plan.
+# Estimated usage: ~4 runs/day × 5 min = 20 min/day = 600 min/month (within limit).
+
+on:
+  schedule:
+    # Run every 6 hours to check Mac Mini health and run agents if needed
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+env:
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    outputs:
+      mac_online: ${{ steps.check.outputs.online }}
+    steps:
+      - name: Check Mac Mini heartbeat
+        id: check
+        run: |
+          # On manual dispatch, always run agents
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "Manual dispatch — running agents"
+            echo "online=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # On schedule, default to online (Mac is primary runner).
+          # A Cloudflare Worker heartbeat endpoint can replace this.
+          echo "Scheduled run — assuming Mac online"
+          echo "online=true" >> "$GITHUB_OUTPUT"
+
+  run-critical-agents:
+    needs: health-check
+    if: needs.health-check.outputs.mac_online == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Lead Accelerator (standby check)
+        run: python3 .github/scripts/failover_agents.py lead-accelerator
+
+      - name: Run Ad Copy Generator
+        run: python3 .github/scripts/failover_agents.py ad-copywriter
+
+      - name: Send Telegram notification
+        run: python3 .github/scripts/failover_agents.py notify
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

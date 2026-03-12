@@ -1,0 +1,45 @@
+{
+  "updated_at": "2026-03-03",
+  "structure": "Option B - Dynamic Creative (1 ad per campaign with all images)",
+  "WEDDINGS": {
+    "campaign_id": "120240274369540446",
+    "campaign_name": "Zoar_Weddings_20260302",
+    "new_adset_id": "120240276037130446",
+    "new_ad_id": "120240276037970446",
+    "creative_id": "1419897139834628",
+    "images": 10,
+    "primary_texts": 5,
+    "headlines": 5,
+    "descriptions": 5,
+    "cta": "CONTACT_US",
+    "status": "ACTIVE"
+  },
+  "CONSTRUCTION": {
+    "campaign_id": "120240274384370446",
+    "campaign_name": "Zoar_Construction_20260302",
+    "new_adset_id": "120240276038530446",
+    "new_ad_id": "120240276039000446",
+    "creative_id": "1960559044817182",
+    "images": 7,
+    "primary_texts": 5,
+    "headlines": 5,
+    "descriptions": 5,
+    "cta": "CONTACT_US",
+    "status": "ACTIVE"
+  },
+  "EVENTS": {
+    "campaign_id": "120240274393510446",
+    "campaign_name": "Zoar_Events_20260302",
+    "new_adset_id": "120240276039710446",
+    "new_ad_id": "120240276040450446",
+    "creative_id": "3434589723382911",
+    "images": 10,
+    "primary_texts": 5,
+    "headlines": 5,
+    "descriptions": 5,
+    "cta": "CONTACT_US",
+    "status": "ACTIVE"
+  },
+  "pixel_id": "1579580876639654",
+  "destination_url": "https://zoarbathroomrental.com"
+}

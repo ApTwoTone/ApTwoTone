@@ -1,0 +1,52 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.sha }}
+        run: |
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          git diff --name-only "$BASE_REF" "$HEAD_REF" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Claude Code Review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CHANGED_FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude --print "Review the following changed files for bugs, security issues, code quality, and adherence to project conventions. Be thorough but concise. Files changed: ${CHANGED_FILES}" > review.txt 2>&1 || true
+          cat review.txt
+
+      - name: Post review comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ -f review.txt ] && [ -s review.txt ]; then
+            REVIEW_BODY=$(cat review.txt | head -c 60000)
+            gh pr comment "$PR_NUMBER" --body "## Claude Code Review
+
+          ${REVIEW_BODY}
+
+          ---
+          *Automated review by Claude Code*"
+          fi

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vendor Leads — Nexus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/vendor.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="js/vendor-app.js"></script>
+</head>
+<body x-data x-init="$store.app.init()">
+
+  <!-- Header -->
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:16px;">
+      <h1>Vendor Leads</h1>
+      <span style="font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:4px;">
+        <span class="status-dot" :class="$store.app.connected ? 'connected' : 'disconnected'"></span>
+        <span x-text="$store.app.connected ? 'Live' : 'Reconnecting...'"></span>
+      </span>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);">
+      Zoar Bathroom Rental — Vendor Discovery Pipeline
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="num" x-text="$store.app.stats.total || 0"></div>
+      <div class="label">Total Vendors</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" x-text="$store.app.stats.today || 0"></div>
+      <div class="label">Found Today</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:var(--green)" x-text="$store.app.stats.high_fit || 0"></div>
+      <div class="label">High Fit (70+)</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:var(--yellow)" x-text="$store.app.stats.medium_fit || 0"></div>
+      <div class="label">Medium Fit</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:var(--accent)" x-text="($store.app.stats.by_status || {}).on_referral_list || 0"></div>
+      <div class="label">On Referral List</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" x-text="$store.app.stats.score_avg || 0"></div>
+      <div class="label">Avg Score</div>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="main-layout">
+
+    <!-- Live Feed -->
+    <div class="live-feed">
+      <div class="live-feed-header">
+        Live Feed
+        <span style="float:right;font-weight:400;text-transform:none;" x-text="$store.app.liveFeed.length + ' events'"></span>
+      </div>
+      <div class="live-feed-items">
+        <template x-if="$store.app.liveFeed.length === 0">
+          <div class="feed-empty">
+            Waiting for new vendors...<br>
+            <span style="font-size:11px;margin-top:8px;display:block;">Run the scraper to see leads appear here in real-time</span>
+          </div>
+        </template>
+        <template x-for="item in $store.app.liveFeed" :key="item.id + '-' + item._feedTime">
+          <div class="feed-item" :class="item._isNew ? 'new-item' : ''"
+               @click="$store.app.feedClick(item)">
+            <span class="feed-time" x-text="$store.app.timeAgo(item._feedTime)"></span>
+            <div class="feed-name" x-text="item.poster_name || 'Unknown'"></div>
+            <div class="feed-meta">
+              <span class="score-badge" :class="$store.app.scoreClass(item.referral_score)"
+                    x-text="item.referral_score"></span>
+              <span x-text="$store.app.formatCategory(item.category)"></span>
+              <template x-if="item.city">
+                <span x-text="' \u00b7 ' + item.city"></span>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Table Panel -->
+    <div class="table-panel">
+      <div class="table-toolbar">
+        <input type="text" placeholder="Search name or business..."
+               x-model="$store.app.searchQuery"
+               @keyup.enter="$store.app.applyFilters()"
+               style="width:200px;">
+        <select x-model="$store.app.statusFilter" @change="$store.app.applyFilters()">
+          <option value="">All Statuses</option>
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="responded">Responded</option>
+          <option value="on_referral_list">On Referral List</option>
+          <option value="not_interested">Not Interested</option>
+          <option value="do_not_contact">Do Not Contact</option>
+        </select>
+        <select x-model="$store.app.categoryFilter" @change="$store.app.applyFilters()">
+          <option value="">All Categories</option>
+          <option value="event_planner">Event Planner</option>
+          <option value="wedding_planner">Wedding Planner</option>
+          <option value="tent_rental">Tent Rental</option>
+          <option value="party_rental">Party Rental</option>
+          <option value="caterer">Caterer</option>
+          <option value="dj">DJ</option>
+          <option value="photographer">Photographer</option>
+          <option value="decorator">Decorator</option>
+          <option value="florist">Florist</option>
+          <option value="bounce_house">Bounce House</option>
+          <option value="photo_booth">Photo Booth</option>
+          <option value="lighting">Lighting</option>
+          <option value="generator_rental">Generator Rental</option>
+          <option value="dance_floor">Dance Floor</option>
+          <option value="venue">Venue</option>
+          <option value="valet">Valet</option>
+          <option value="setup_crew">Setup Crew</option>
+          <option value="other">Other</option>
+        </select>
+        <select x-model="$store.app.minScore" @change="$store.app.applyFilters()">
+          <option value="">All Scores</option>
+          <option value="80">80+ (High Fit)</option>
+          <option value="50">50+ (Medium+)</option>
+          <option value="30">30+ (Low+)</option>
+        </select>
+        <button class="btn btn-secondary" @click="$store.app.clearFilters()" style="font-size:11px;padding:6px 12px;">
+          Clear
+        </button>
+        <span style="margin-left:auto;font-size:12px;color:var(--text-muted);"
+              x-text="$store.app.prospects.length + ' vendors'"></span>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th @click="$store.app.toggleSort('referral_score')" style="width:80px;">
+                Score <span class="sort-arrow" x-text="$store.app.sortArrow('referral_score')"></span>
+              </th>
+              <th @click="$store.app.toggleSort('poster_name')">
+                Name <span class="sort-arrow" x-text="$store.app.sortArrow('poster_name')"></span>
+              </th>
+              <th>Business</th>
+              <th @click="$store.app.toggleSort('category')">
+                Category <span class="sort-arrow" x-text="$store.app.sortArrow('category')"></span>
+              </th>
+              <th>City</th>
+              <th>Activity</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th @click="$store.app.toggleSort('scraped_at')">
+                Found <span class="sort-arrow" x-text="$store.app.sortArrow('scraped_at')"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-if="$store.app.loading">
+              <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">Loading...</td></tr>
+            </template>
+            <template x-if="!$store.app.loading && $store.app.prospects.length === 0">
+              <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--text-muted);">
+                No vendors found yet. Run the scraper to start discovering leads.
+              </td></tr>
+            </template>
+            <template x-for="p in $store.app.prospects" :key="p.id">
+              <tr @click="$store.app.openDetail(p)"
+                  :class="$store.app.selectedVendor && $store.app.selectedVendor.id === p.id ? 'selected' : ''">
+                <td>
+                  <span class="score-badge" :class="$store.app.scoreClass(p.referral_score)">
+                    <span x-text="p.referral_score"></span>
+                    <span x-text="$store.app.scoreLabel(p.referral_score)" style="font-size:9px;"></span>
+                  </span>
+                </td>
+                <td>
+                  <strong x-text="p.poster_name || '\u2014'"></strong>
+                </td>
+                <td x-text="p.business_name || '\u2014'" style="color:var(--text-secondary);"></td>
+                <td x-text="$store.app.formatCategory(p.category)"></td>
+                <td x-text="p.city || '\u2014'" style="color:var(--text-secondary);"></td>
+                <td><span x-html="$store.app.starsHtml(p.activity_level)"></span></td>
+                <td x-text="p.phone || '\u2014'" style="color:var(--text-secondary);"></td>
+                <td>
+                  <span class="status-badge" :class="p.status || 'new'"
+                        x-text="$store.app.formatStatus(p.status)"></span>
+                </td>
+                <td x-text="$store.app.timeAgo(p.scraped_at)" style="color:var(--text-muted);font-size:11px;"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Detail Slide Panel -->
+  <template x-if="$store.app.detailOpen && $store.app.selectedVendor">
+    <div>
+      <div class="detail-overlay" @click="$store.app.closeDetail()"></div>
+      <div class="detail-panel">
+        <button class="close-btn" @click="$store.app.closeDetail()">&times;</button>
+
+        <h2 x-text="($store.app.selectedVendor.poster_name || 'Unknown')"></h2>
+
+        <!-- Score + Activity -->
+        <div style="display:flex;gap:16px;margin-bottom:20px;">
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;">Referral Score</div>
+            <span class="score-badge" :class="$store.app.scoreClass($store.app.selectedVendor.referral_score)" style="font-size:14px;padding:4px 12px;">
+              <span x-text="$store.app.selectedVendor.referral_score"></span>
+              <span x-text="$store.app.scoreLabel($store.app.selectedVendor.referral_score)"></span>
+            </span>
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;">Activity</div>
+            <span x-html="$store.app.starsHtml($store.app.selectedVendor.activity_level)" style="font-size:16px;"></span>
+          </div>
+        </div>
+
+        <!-- Fields -->
+        <div class="detail-field">
+          <div class="detail-label">Business Name</div>
+          <div class="detail-value" x-text="$store.app.selectedVendor.business_name || '\u2014'"></div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Category</div>
+          <div class="detail-value" x-text="$store.app.formatCategory($store.app.selectedVendor.category)"></div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">City</div>
+          <div class="detail-value" x-text="$store.app.selectedVendor.city || '\u2014'"></div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Phone</div>
+          <div class="detail-value">
+            <template x-if="$store.app.selectedVendor.phone">
+              <a :href="'tel:' + $store.app.selectedVendor.phone" x-text="$store.app.selectedVendor.phone"></a>
+            </template>
+            <template x-if="!$store.app.selectedVendor.phone">
+              <span>&mdash;</span>
+            </template>
+          </div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Email</div>
+          <div class="detail-value">
+            <template x-if="$store.app.selectedVendor.email">
+              <a :href="'mailto:' + $store.app.selectedVendor.email" x-text="$store.app.selectedVendor.email"></a>
+            </template>
+            <template x-if="!$store.app.selectedVendor.email">
+              <span>&mdash;</span>
+            </template>
+          </div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Website</div>
+          <div class="detail-value">
+            <template x-if="$store.app.selectedVendor.website">
+              <a :href="$store.app.selectedVendor.website.startsWith('http') ? $store.app.selectedVendor.website : 'https://' + $store.app.selectedVendor.website"
+                 target="_blank" rel="noopener" x-text="$store.app.selectedVendor.website"></a>
+            </template>
+            <template x-if="!$store.app.selectedVendor.website">
+              <span>&mdash;</span>
+            </template>
+          </div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Facebook Profile</div>
+          <div class="detail-value">
+            <a :href="$store.app.selectedVendor.profile_url" target="_blank" rel="noopener"
+               x-text="$store.app.selectedVendor.profile_url"></a>
+          </div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Found In Group</div>
+          <div class="detail-value">
+            <a :href="$store.app.selectedVendor.group_url" target="_blank" rel="noopener"
+               x-text="$store.app.selectedVendor.group_name || '\u2014'"></a>
+          </div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Post Type</div>
+          <div class="detail-value"
+               x-text="$store.app.selectedVendor.post_type === 'vendor_promotion' ? 'Vendor Promotion' : 'Event Announcement'"></div>
+        </div>
+
+        <!-- About -->
+        <template x-if="$store.app.selectedVendor.about">
+          <div class="detail-field">
+            <div class="detail-label">About</div>
+            <div class="detail-post" x-text="$store.app.selectedVendor.about"></div>
+          </div>
+        </template>
+
+        <!-- Post Content -->
+        <template x-if="$store.app.selectedVendor.post_content">
+          <div class="detail-field">
+            <div class="detail-label">Post Content</div>
+            <div class="detail-post" x-text="$store.app.selectedVendor.post_content"></div>
+          </div>
+        </template>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:20px 0;">
+
+        <!-- Status Control -->
+        <div class="detail-field">
+          <div class="detail-label">Status</div>
+          <select :value="$store.app.selectedVendor.status || 'new'"
+                  @change="$store.app.updateStatus($store.app.selectedVendor.id, $event.target.value)">
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="responded">Responded</option>
+            <option value="on_referral_list">On Referral List</option>
+            <option value="not_interested">Not Interested</option>
+            <option value="do_not_contact">Do Not Contact</option>
+          </select>
+        </div>
+
+        <!-- Notes -->
+        <div class="detail-field">
+          <div class="detail-label">Notes</div>
+          <textarea x-model="$store.app.selectedVendor.notes"
+                    @blur="$store.app.saveNotes($store.app.selectedVendor.id, $store.app.selectedVendor.notes)"
+                    placeholder="Add notes about this vendor..."></textarea>
+        </div>
+
+        <div class="detail-field" style="font-size:11px;color:var(--text-muted);margin-top:16px;">
+          ID: #<span x-text="$store.app.selectedVendor.id"></span>
+          &middot; Scraped: <span x-text="$store.app.selectedVendor.scraped_at"></span>
+        </div>
+      </div>
+    </div>
+  </template>
+
+</body>
+</html>

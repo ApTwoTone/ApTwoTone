@@ -1,0 +1,172 @@
+================================================================================
+ZOAR BATHROOM RENTALS — OPTIMIZED FACEBOOK AD COPY (v2)
+Updated: 2026-02-28 | UTM-tracked links for CRM attribution
+================================================================================
+
+WEBSITE LINK (all ads):
+zoarbathroomrental.com/?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_mar2026
+
+AD CAMPAIGN SETTINGS:
+- Objective: Lead Generation / Traffic (split test both)
+- Audience: 25-55, 25-mile radius of Los Angeles
+- Interests: Wedding planning, Event planning, Outdoor entertainment,
+  Party planning, Wedding venues, Corporate events
+- Budget: $15-25/day recommended to start
+- Placements: Facebook Feed, Instagram Feed, Stories
+
+================================================================================
+VARIATION A — SHORT / URGENCY (Weekend Focus)
+================================================================================
+
+UTM LINK: zoarbathroomrental.com/?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_mar2026&utm_content=short_urgency
+
+HEADLINE: This Weekend — Luxury Restrooms, Delivered
+PRIMARY TEXT:
+
+Still figuring out restrooms for your event this weekend?
+
+We deliver a luxury 4-stall restroom trailer — porcelain toilets, AC, hardwood floors, running water, full mirrors — set up and picked up by us.
+
+Starting at $800. Serving all of Southern California.
+
+3 weekend slots left this month.
+
+Tap below for a free 2-minute quote.
+
+DESCRIPTION: Luxury restroom trailer rental — delivery, setup & pickup included.
+CTA BUTTON: Get Quote
+
+================================================================================
+VARIATION B — MEDIUM / WEDDING-FOCUSED
+================================================================================
+
+UTM LINK: zoarbathroomrental.com/?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_mar2026&utm_content=wedding_medium
+
+HEADLINE: Your Wedding Guests Deserve Better Than a Porta-Potty
+PRIMARY TEXT:
+
+You chose the venue. The florist. The photographer. The playlist you spent 3 weeks on.
+
+Then your guests walk up to a plastic box in a field.
+
+We fix that.
+
+Zoar Bathroom Rentals delivers a luxury 4-stall restroom trailer that looks like it belongs inside a five-star hotel:
+
+- Porcelain flushing toilets
+- Running water + premium soap & towels
+- Air conditioning & heating
+- Hardwood floors + LED lighting
+- Full-length mirrors in every stall
+
+Delivery, setup, and pickup — all included. Serving Malibu to Temecula, DTLA to Palm Springs.
+
+Weekend dates are filling fast. Get your free quote in 2 minutes.
+
+DESCRIPTION: LA's luxury restroom trailer — starting at $800, all-inclusive.
+CTA BUTTON: Get Quote
+
+================================================================================
+VARIATION C — LONG / BROAD AUDIENCE (Events + Social Proof)
+================================================================================
+
+UTM LINK: zoarbathroomrental.com/?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_mar2026&utm_content=broad_long
+
+HEADLINE: "Wait... This Is a Portable Restroom?"
+PRIMARY TEXT:
+
+That's what every guest says when they walk in.
+
+We're not a porta-potty company. We're the opposite of a porta-potty company.
+
+Zoar Bathroom Rentals provides a climate-controlled, hardwood-floored, mirror-lined luxury restroom trailer for events across Southern California.
+
+Here's what's inside:
+- Porcelain flushing toilets (yes, real ones)
+- Hot & cold running water
+- Air conditioning + heat
+- LED lighting + hardwood floors
+- Full mirrors in every stall
+- Premium soap & fresh towels
+
+Here's what's included:
+- Delivery to your location
+- Professional setup & leveling
+- Pickup after your event
+
+Perfect for weddings, corporate events, birthday parties, film sets, galas, backyard celebrations — anything where plastic toilets would kill the vibe.
+
+Starting at $800. Serving all of SoCal.
+
+Weekend availability is limited. Tap below before your date is taken.
+
+DESCRIPTION: Luxury portable restrooms for any event — delivery & setup included.
+CTA BUTTON: Get Quote
+
+================================================================================
+VARIATION D — VIDEO/CAROUSEL AD COPY (NEW — for photo carousel)
+================================================================================
+
+UTM LINK: zoarbathroomrental.com/?utm_source=facebook&utm_medium=paid&utm_campaign=socal_events_mar2026&utm_content=carousel_photos
+
+HEADLINE: See Inside LA's Luxury Restroom Trailer
+PRIMARY TEXT:
+
+Swipe to see why event planners across Southern California are ditching porta-potties.
+
+Our 4-stall luxury restroom trailer features porcelain toilets, running water, AC, hardwood floors, and full mirrors. Your guests won't believe it's portable.
+
+Starting at $800. Delivery + setup + pickup included.
+
+Tap "Get Quote" for availability this month.
+
+DESCRIPTION: Luxury restroom trailer — swipe to see inside.
+CTA BUTTON: Get Quote
+
+CAROUSEL CARD HEADLINES:
+1. "Real Porcelain Toilets"
+2. "Hardwood Floors & Mirrors"
+3. "Climate Controlled"
+4. "Delivery & Setup Included"
+5. "Book Your Date Now"
+
+================================================================================
+A/B TESTING STRATEGY
+================================================================================
+
+WEEK 1: Run Variation A vs Variation B ($15/day each)
+- Compare CTR, cost per lead, and CRM conversion
+- Kill the loser after 500+ impressions each
+
+WEEK 2: Winner of Week 1 vs Variation C ($20/day each)
+- Compare same metrics
+- Start building Pixel audience data
+
+WEEK 3+: Scale winner to $30-50/day
+- Launch Variation D (carousel) as supplementary
+- Create Lookalike Audience from website visitors + leads
+
+================================================================================
+RETARGETING AD (for website visitors who didn't convert)
+================================================================================
+
+UTM LINK: zoarbathroomrental.com/?utm_source=facebook&utm_medium=paid&utm_campaign=retarget_mar2026&utm_content=retarget
+
+HEADLINE: Still Need Restrooms for Your Event?
+PRIMARY TEXT:
+
+You checked us out — smart move. But you haven't locked in your date yet.
+
+Weekend slots fill up fast, especially during event season. Don't let someone else grab your date.
+
+Get your free quote in 2 minutes. No pressure, no commitment.
+
+DESCRIPTION: Lock in your date before it's gone.
+CTA BUTTON: Get Quote
+
+AUDIENCE: Custom Audience — website visitors (last 30 days) who did NOT submit the quote form.
+Requires Facebook Pixel (already installed: ID 1087553350137807)
+
+================================================================================
+END OF OPTIMIZED AD COPY
+================================================================================

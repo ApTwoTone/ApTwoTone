@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aggressive Outreach Workspace</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231b3f34'/%3E%3Cpath d='M18 18h28v8H26v8h16v8H26v4h22v8H18z' fill='%23f6f1e8'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/aggressive.css">
+  <script defer src="js/aggressive-app.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body x-data="aggressiveOutreachApp()" x-init="init()">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">Zoar Bathroom Rentals</div>
+      <h1>Aggressive Outreach Workspace</h1>
+      <p class="subtitle">A five-agent sales research stack profiles each business, verifies official contacts, scores name confidence, proposes the best offer angle, and keeps cold SMS blocked until consent exists.</p>
+    </div>
+    <div class="actions">
+      <a class="ghost-link" href="/dashboard" target="_blank" rel="noopener">Main Dashboard</a>
+      <a class="ghost-link" href="/vendor-leads" target="_blank" rel="noopener">Vendor Leads</a>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-label">Targets Researched</div>
+      <div class="stat-value" x-text="summary.total_targets || 0"></div>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">Email Ready</div>
+      <div class="stat-value" x-text="summary.email_ready || 0"></div>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">Call Ready</div>
+      <div class="stat-value" x-text="summary.call_ready || 0"></div>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">SMS Allowed</div>
+      <div class="stat-value" x-text="summary.sms_allowed || 0"></div>
+    </article>
+    <article class="stat-card">
+      <div class="stat-label">Queued Emails</div>
+      <div class="stat-value" x-text="summary.queued_email || 0"></div>
+    </article>
+  </section>
+
+  <section class="control-bar">
+    <div class="control-group">
+      <label>Targets</label>
+      <input type="number" min="1" max="50" x-model.number="runLimit">
+    </div>
+    <div class="control-group">
+      <label>Workers</label>
+      <input type="number" min="1" max="5" x-model.number="runConcurrency">
+    </div>
+    <div class="control-group">
+      <label>Status</label>
+      <select x-model="statusFilter" @change="loadTargets()">
+        <option value="">All</option>
+        <option value="researched">Researched</option>
+        <option value="queued_email">Queued Email</option>
+        <option value="called">Called</option>
+        <option value="needs_review">Needs Review</option>
+        <option value="do_not_contact">Do Not Contact</option>
+      </select>
+    </div>
+    <button class="primary-btn" :disabled="running" @click="runResearch()">
+      <span x-show="!running">Run 5-Agent Research</span>
+      <span x-show="running">Running...</span>
+    </button>
+    <button class="secondary-btn" @click="refresh()">Refresh</button>
+    <div class="status-note">
+      Last run:
+      <span x-text="summary.last_run || 'not yet'"></span>
+    </div>
+  </section>
+
+  <template x-if="error">
+    <section class="error-banner" x-text="error"></section>
+  </template>
+
+  <main class="workspace">
+    <section class="target-table-card">
+      <div class="card-header">
+        <h2>Research Targets</h2>
+        <span x-text="targets.length + ' loaded'"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>City</th>
+              <th>Official Email</th>
+              <th>Official Phone</th>
+              <th>Channels</th>
+              <th>Status</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template x-if="loading">
+              <tr><td colspan="7" class="empty">Loading targets...</td></tr>
+            </template>
+            <template x-if="!loading && targets.length === 0">
+              <tr><td colspan="7" class="empty">Run the research workers to build the outreach list.</td></tr>
+            </template>
+            <template x-for="target in targets" :key="target.id">
+              <tr :class="selectedTarget && selectedTarget.id === target.id ? 'selected-row' : ''" @click="selectTarget(target)">
+                <td>
+                  <div class="biz-name" x-text="target.business_name"></div>
+                  <div class="biz-meta" x-text="formatCategory(target.category)"></div>
+                  <div class="biz-submeta" x-show="target.contact_name">
+                    Contact:
+                    <span x-text="target.contact_name"></span>
+                    <span x-show="target.contact_confidence">•</span>
+                    <span x-show="target.contact_confidence" x-text="target.contact_confidence + '% confidence'"></span>
+                  </div>
+                </td>
+                <td x-text="target.city || '-'"></td>
+                <td>
+                  <a x-show="target.official_email" :href="'mailto:' + target.official_email" x-text="target.official_email"></a>
+                  <span x-show="!target.official_email">-</span>
+                </td>
+                <td>
+                  <a x-show="target.official_phone" :href="'tel:' + normalizedPhone(target.official_phone)" x-text="target.official_phone"></a>
+                  <span x-show="!target.official_phone">-</span>
+                </td>
+                <td>
+                  <div class="channel-pills">
+                    <span class="pill ok" x-show="target.email_ready">Email</span>
+                    <span class="pill ok" x-show="target.call_ready">Call</span>
+                    <span class="pill blocked" x-show="!target.sms_allowed">SMS Blocked</span>
+                    <span class="pill ok" x-show="target.sms_allowed">SMS OK</span>
+                  </div>
+                </td>
+                <td><span class="status-chip" x-text="prettyStatus(target.status)"></span></td>
+                <td x-text="shortDate(target.updated_at)"></td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <aside class="detail-card" x-show="selectedTarget">
+      <template x-if="selectedTarget">
+        <div>
+          <div class="card-header detail-header">
+            <div>
+              <div class="eyebrow">Selected Target</div>
+              <h2 x-text="selectedTarget.business_name"></h2>
+            </div>
+            <div class="detail-actions">
+              <button class="primary-btn" x-show="selectedTarget.email_ready" @click="queueEmail(selectedTarget)">Queue Email</button>
+              <select x-model="selectedStatus" @change="saveStatus()">
+                <option value="researched">Researched</option>
+                <option value="queued_email">Queued Email</option>
+                <option value="called">Called</option>
+                <option value="needs_review">Needs Review</option>
+                <option value="do_not_contact">Do Not Contact</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div>
+              <div class="detail-label">Website</div>
+              <a :href="selectedTarget.website" target="_blank" rel="noopener" x-text="selectedTarget.website"></a>
+            </div>
+            <div>
+              <div class="detail-label">Source Page</div>
+              <a :href="selectedTarget.source_url" target="_blank" rel="noopener" x-text="selectedTarget.source_url || '-'"></a>
+            </div>
+            <div>
+              <div class="detail-label">Contact Target</div>
+              <div class="detail-box">
+                <span x-text="selectedTarget.contact_name || 'No verified human name found yet.'"></span>
+                <div class="muted" x-show="selectedTarget.contact_confidence" x-text="'Confidence: ' + selectedTarget.contact_confidence + '%'"></div>
+              </div>
+            </div>
+            <div>
+              <div class="detail-label">Fit Signals</div>
+              <div class="pill-row">
+                <template x-for="signal in (selectedTarget.fit_signals || [])" :key="signal">
+                  <span class="pill neutral" x-text="signal"></span>
+                </template>
+                <span class="muted" x-show="!(selectedTarget.fit_signals || []).length">No fit signals captured yet.</span>
+              </div>
+            </div>
+            <div>
+              <div class="detail-label">Evidence</div>
+              <div class="detail-box" x-text="selectedTarget.evidence_snippet || 'No site-specific evidence captured yet.'"></div>
+            </div>
+            <div>
+              <div class="detail-label">SMS Policy</div>
+              <div class="detail-box" x-text="selectedTarget.sms_reason || 'Cold SMS blocked until consent exists.'"></div>
+            </div>
+            <div>
+              <div class="detail-label">Quality Flags</div>
+              <div class="pill-row">
+                <template x-for="flag in (selectedTarget.site_quality_flags || [])" :key="flag">
+                  <span class="pill blocked" x-text="formatCategory(flag)"></span>
+                </template>
+                <span class="muted" x-show="!(selectedTarget.site_quality_flags || []).length">No review flags.</span>
+              </div>
+            </div>
+            <div>
+              <div class="detail-label">Research Stack</div>
+              <div class="pill-row">
+                <template x-for="agent in (selectedTarget.research_stack || [])" :key="agent">
+                  <span class="pill neutral" x-text="formatCategory(agent)"></span>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="detail-label">Sales Brief</div>
+            <div class="detail-box" x-text="selectedTarget.sales_brief || 'No sales brief captured yet.'"></div>
+          </div>
+          <div class="section">
+            <div class="detail-label">Offer Strategy</div>
+            <div class="detail-box" x-text="selectedTarget.offer_strategy || 'No offer angle captured yet.'"></div>
+          </div>
+          <div class="section">
+            <div class="detail-label">Qualifying Questions</div>
+            <div class="list-box">
+              <template x-for="question in (selectedTarget.qualifying_questions || [])" :key="question">
+                <div class="list-row">
+                  <span class="list-bullet">•</span>
+                  <span x-text="question"></span>
+                </div>
+              </template>
+              <span class="muted" x-show="!(selectedTarget.qualifying_questions || []).length">No qualifying questions captured yet.</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="detail-label">Curated Email Subject</div>
+            <div class="detail-box mono" x-text="selectedTarget.message_subject"></div>
+          </div>
+          <div class="section">
+            <div class="detail-label">Curated Email Body</div>
+            <pre class="detail-box mono" x-text="selectedTarget.message_body"></pre>
+          </div>
+          <div class="section">
+            <div class="detail-label">Call Script</div>
+            <pre class="detail-box mono" x-text="selectedTarget.call_script"></pre>
+          </div>
+
+          <div class="section">
+            <div class="detail-label">Discovered Emails</div>
+            <div class="pill-row">
+              <template x-for="email in (selectedTarget.discovered_emails || [])" :key="email">
+                <span class="pill neutral" x-text="email"></span>
+              </template>
+            </div>
+          </div>
+          <div class="section">
+            <div class="detail-label">Discovered Phones</div>
+            <div class="pill-row">
+              <template x-for="phone in (selectedTarget.discovered_phones || [])" :key="phone">
+                <span class="pill neutral" x-text="phone"></span>
+              </template>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="detail-label">Source Pages</div>
+            <template x-for="source in (selectedTarget.sources || [])" :key="source.source_url + source.fetched_at">
+              <div class="source-card">
+                <a :href="source.source_url" target="_blank" rel="noopener" x-text="source.page_title || source.source_url"></a>
+                <div class="muted" x-text="source.evidence_snippet || ''"></div>
+              </div>
+            </template>
+          </div>
+
+          <div class="section">
+            <div class="detail-label">Activity Log</div>
+            <template x-for="item in (selectedTarget.activity || [])" :key="item.created_at + item.event_type">
+              <div class="activity-row">
+                <span class="muted" x-text="shortDate(item.created_at)"></span>
+                <strong x-text="item.agent_name || 'system'"></strong>
+                <span x-text="item.event_type"></span>
+                <span class="muted" x-text="item.detail"></span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </aside>
+  </main>
+</body>
+</html>

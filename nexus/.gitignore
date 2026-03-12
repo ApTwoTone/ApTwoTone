@@ -1,0 +1,71 @@
+# ── Credentials & secrets ──────────────────────────────────
+*.env
+.env*
+config.json
+secrets/
+*.pem
+*.key
+
+# ── Database ───────────────────────────────────────────────
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# ── Python ─────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# ── Browser automation state ───────────────────────────────
+browser_state/
+gv_browser_state/
+playwright_state/
+.playwright-cli/
+
+# ── Backups & temp ─────────────────────────────────────────
+backups/
+*.bak
+*.tmp
+*.log
+outputs/
+audit_screenshots/
+test-screenshots/
+staging/
+tmp/
+audit-*.png
+=5.9.0
+<sqlite3.Connection object at *>
+scrapers/fb_vendor_scraper/*.log*
+scrapers/fb_vendor_scraper/scraper_state.json
+scrapers/fb_vendor_scraper/groups_backup.json
+
+# ── Node (website build) ──────────────────────────────────
+node_modules/
+.next/
+.cache/
+
+# ── IDE ────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# ── Deploy artifacts ───────────────────────────────────────
+website-deploy.zip
+*.zip
+.wrangler/
+
+# ── Media assets (served from Cloudflare Pages) ───────────
+website/images/
+website/videos/
+
+# ── Claude / AI ────────────────────────────────────────────
+.claude/
+.aider*

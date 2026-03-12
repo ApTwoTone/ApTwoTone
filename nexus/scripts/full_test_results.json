@@ -1,0 +1,2154 @@
+{
+  "timestamp": "2026-03-06T14:28:21.065964",
+  "server_url": "http://127.0.0.1:7860",
+  "summary": {
+    "total": 328,
+    "passed": 298,
+    "failed": 9,
+    "skipped": 21,
+    "duration_seconds": 55.1
+  },
+  "by_category": {
+    "A. Static Files": {
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    "B. CRM Core CRUD": {
+      "passed": 27,
+      "failed": 0,
+      "skipped": 0
+    },
+    "C. Vendor System": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0
+    },
+    "D. Agent System": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    "E. Fleet & Coordinator": {
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0
+    },
+    "F. Health & Monitoring": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "G. Ads & Analytics": {
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    "H. Facebook & Social": {
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    "I. Build Pipeline & Studio": {
+      "passed": 10,
+      "failed": 1,
+      "skipped": 0
+    },
+    "J. D3 Revenue Lab": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "K. Brain & Knowledge": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "L. Memory System": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "M. B2B Leads": {
+      "passed": 4,
+      "failed": 0,
+      "skipped": 0
+    },
+    "N. Hierarchy & Processes": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "O. Security": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "P. Remaining GET Endpoints": {
+      "passed": 71,
+      "failed": 7,
+      "skipped": 0
+    },
+    "Q. Safe POST Endpoints": {
+      "passed": 13,
+      "failed": 1,
+      "skipped": 21
+    },
+    "R. CRM Dashboard Navigation": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0
+    },
+    "S. CRM Dashboard Buttons": {
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0
+    },
+    "T. CRM Dashboard Modals": {
+      "passed": 14,
+      "failed": 0,
+      "skipped": 0
+    },
+    "U. CRM Form Submissions": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0
+    },
+    "V. Vendor Leads Dashboard": {
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0
+    },
+    "W. Marketing Website": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "tests": [
+    {
+      "category": "A. Static Files",
+      "name": "GET /",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "GET /dashboard/",
+      "passed": true,
+      "detail": "76503 bytes"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "GET /dashboard/js/app.js",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "GET /dashboard/js/api.js",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "GET /dashboard/css/dashboard.css",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "GET /vendor-leads/",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "GET /vendor-leads/js/vendor-app.js",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "GET /site/",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "A. Static Files",
+      "name": "Dashboard has newLead modal",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "A. Static Files",
+      "name": "Dashboard has addNote modal",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "A. Static Files",
+      "name": "Dashboard has changeStage modal",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "A. Static Files",
+      "name": "Dashboard has sendSMS modal",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "A. Static Files",
+      "name": "Dashboard has sendEmail modal",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "A. Static Files",
+      "name": "Dashboard has editLead modal",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/stages",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/activity",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/dashboard",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads/pipeline",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/conversations",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/settings",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/followups",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/templates",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/stats/sources",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads/scores",
+      "passed": true,
+      "detail": "422"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads/priority-summary",
+      "passed": true,
+      "detail": "422"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "POST /api/crm/leads (create)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads/22",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "PUT /api/crm/leads/22",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "POST note",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads/22/timeline",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "POST stage transition",
+      "passed": true,
+      "detail": "400"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/conversations/22/messages",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "POST enroll follow-up",
+      "passed": true,
+      "detail": "500"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "POST requeue lead",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET FB webhook verify",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "PUT /api/crm/settings",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads with search",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads with filter",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "B. CRM Core CRUD",
+      "name": "GET /api/crm/leads pagination",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors/categories",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors/outreach-queue",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors/data-audit",
+      "passed": true,
+      "detail": "422"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors/eligible",
+      "passed": true,
+      "detail": "422"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors/361136",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors?category=wedding_venue",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/vendors?search=party",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/email-marketing/preview-batch",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/email-marketing/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "C. Vendor System",
+      "name": "GET /api/email-marketing/campaign-health",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/live-feed",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/brain",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/content-queue",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/discovered-leads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/running",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/facebook-ads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/engagement-log",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "D. Agent System",
+      "name": "GET /api/agents/activity",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/fleet/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/fleet/workers",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/fleet/tasks",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/fleet/tasks/activity",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/fleet/tasks/dead-letters",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/fleet/resources",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/fleet/utilization",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/coordinator/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "E. Fleet & Coordinator",
+      "name": "GET /api/token-budget",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/full",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/history",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/events",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/repairs",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/model-performance",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/brain-stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/scan",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/health/system-info",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/ping",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "F. Health & Monitoring",
+      "name": "GET /api/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/metrics",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/report/daily",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/report/weekly",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/creatives",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/winners",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/performance-report",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/copy-library",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/ads/test-results",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/analytics/dashboard",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/analytics/revenue",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/analytics/funnel",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/analytics/leads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/metrics",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/metrics/latest",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "G. Ads & Analytics",
+      "name": "GET /api/revenue/summary",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/dashboard",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/prospects",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/stats/scored",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/page/info",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/page/posts",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/page/insights",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/fb/page/organic-content",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/organic/plan",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/organic/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/organic/recent",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/marketplace/posts",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/marketplace/schedule",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/marketplace/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "H. Facebook & Social",
+      "name": "GET /api/instagram/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/builds",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/studio/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/studio/file-locks",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/studio/tasks",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/studio/bugs",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/studio/metrics",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/tasks",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/tasks/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/tasks/code/active",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/chains/active",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/chains/types/list",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "J. D3 Revenue Lab",
+      "name": "GET /api/d3/dashboard",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "J. D3 Revenue Lab",
+      "name": "GET /api/d3/personas",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "J. D3 Revenue Lab",
+      "name": "GET /api/d3/experiments",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "J. D3 Revenue Lab",
+      "name": "GET /api/d3/trends",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "J. D3 Revenue Lab",
+      "name": "GET /api/d3/failures",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "J. D3 Revenue Lab",
+      "name": "GET /api/d3/portfolio",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "K. Brain & Knowledge",
+      "name": "GET /api/knowledge",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "K. Brain & Knowledge",
+      "name": "GET /api/knowledge/insights",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "K. Brain & Knowledge",
+      "name": "GET /api/brain/errors",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "K. Brain & Knowledge",
+      "name": "GET /api/brain/improvements",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "K. Brain & Knowledge",
+      "name": "GET /api/brain/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "K. Brain & Knowledge",
+      "name": "GET /api/brain/discussions",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "K. Brain & Knowledge",
+      "name": "GET /api/brain/knowledge",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "L. Memory System",
+      "name": "GET /api/memory",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "L. Memory System",
+      "name": "GET /api/memory/history",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "L. Memory System",
+      "name": "GET /api/memory/export",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "L. Memory System",
+      "name": "GET /api/memory/recall?q=test",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "M. B2B Leads",
+      "name": "GET /api/b2b/dashboard",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "M. B2B Leads",
+      "name": "GET /api/b2b/leads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "M. B2B Leads",
+      "name": "GET /api/b2b/digest",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "M. B2B Leads",
+      "name": "GET /api/b2b/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "N. Hierarchy & Processes",
+      "name": "GET /api/hierarchy/tree",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "N. Hierarchy & Processes",
+      "name": "GET /api/hierarchy/tasks",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "N. Hierarchy & Processes",
+      "name": "GET /api/hierarchy/comms",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "N. Hierarchy & Processes",
+      "name": "GET /api/hierarchy/agent-comms",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "N. Hierarchy & Processes",
+      "name": "GET /api/processes",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "N. Hierarchy & Processes",
+      "name": "GET /api/processes/launchd",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "N. Hierarchy & Processes",
+      "name": "GET /api/research/reports",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "O. Security",
+      "name": "GET /api/security/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "O. Security",
+      "name": "GET /api/security/outbound-log",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "O. Security",
+      "name": "GET /api/security/audit",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "O. Security",
+      "name": "GET /api/claude-guard/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "O. Security",
+      "name": "GET /api/auth/session",
+      "passed": true,
+      "detail": "401"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/posting/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/posting/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/posting/preview",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/posting/today",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/posting/calendar",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/posting/history",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/quotes",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/quotes/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/invoices",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/bookings",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/bookings/availability",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/bookings/pipeline",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/capi/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/capi/recent",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/capi/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/capi/events",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/capi/log",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/meta/campaigns",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/meta/account",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/pixel/code",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/seo/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/seo/sitemap",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/seo/schema/faq",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/seo/schema/local-business",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/gbp/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/competitors",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/competitors/alerts",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/competitors/intel",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/messenger/stats",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/messenger/conversations",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/retargeting/audiences",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/retargeting/summary",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/reengagement/campaigns",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/reengagement/targets",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/reengagement/pending",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/media/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/media/collections",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/approvals",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/reviews/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/reviews/pending",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/email-parser/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/scraper/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/scraper/leads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/scraper/groups",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/browser/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/browser/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/videos/stats",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/video/prompts",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/scoring/leads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/followup/pending",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/talk/history",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/talk/snapshot",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/talk/claude-spend",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/tools",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/keys/list",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/intel/live",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/events/command",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/milestones",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/vendor-research/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/email/queue",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/campaigns",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/ui/version",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/ui/changelog",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/services",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/msg/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/msg/conversations",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/msg/test-contacts",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/ghl/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/ghl/contacts",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/higgsfield/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/higgsfield/images",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/higgsfield/ad-campaigns",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/higgsfield/static-ads",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/higgsfield/script-history",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/bot/sessions",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/assistant/todos",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/assistant/health",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/crm/import/status",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/talk/send",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/ai/classify",
+      "passed": true,
+      "detail": "500"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/objection/detect",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/system/backups",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/milestones/check",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/brain/scan",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/memory/remember",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/knowledge",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/quote/generate",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/posting/generate",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/hierarchy/task",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/bot/session",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/d3/personas",
+      "passed": false,
+      "detail": "timeout/error: timed out"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/organic/log",
+      "passed": true,
+      "detail": "200"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/msg/send-sms",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/msg/send-email",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/crm/leads/{id}/sms",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/crm/leads/{id}/email",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/quick-send-sms",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/quick-send-email",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/ghl/send",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/bot/send",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/vendors/{id}/send-email",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/vendors/bulk-send",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/email-marketing/approve-batch",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/fb/trigger_scrape",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/fb/stop_scrape",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/processes/*/start",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/processes/*/stop",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/processes/stop-all",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/coordinator/emergency-stop",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/coordinator/pause",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/coordinator/resume",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/clear-config",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/builds/start",
+      "passed": null,
+      "detail": "SKIP: outbound/dangerous"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Dashboard loads",
+      "passed": true,
+      "detail": "1184 chars"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Alpine.js loaded",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to overview",
+      "passed": true,
+      "detail": "view=overview"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to contacts",
+      "passed": true,
+      "detail": "view=contacts"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to pipeline",
+      "passed": true,
+      "detail": "view=pipeline"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to conversations",
+      "passed": true,
+      "detail": "view=conversations"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to activity",
+      "passed": true,
+      "detail": "view=activity"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to metrics",
+      "passed": true,
+      "detail": "view=metrics"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to automation",
+      "passed": true,
+      "detail": "view=automation"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to agents",
+      "passed": true,
+      "detail": "view=agents"
+    },
+    {
+      "category": "R. CRM Dashboard Navigation",
+      "name": "Navigate to settings",
+      "passed": true,
+      "detail": "view=settings"
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Overview: + New Lead button exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Contacts: Search input exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Contacts: Refresh button exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Contacts: Prev button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Contacts: Next button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Pipeline: renders content",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Metrics: Refresh button exists",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Metrics: Analyze Dropouts button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Automation: renders content",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Agents: Generate Content button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Agents: Run Analysis button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Agents: Brain tab 'Insights'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Agents: Brain tab 'Knowledge'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Agents: Brain tab 'Discussions'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Settings: Create Backup button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Settings: Test Webhook button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Settings: Copy webhook button",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Conversations: Filter tab 'All'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Conversations: Filter tab 'SMS'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "S. CRM Dashboard Buttons",
+      "name": "Conversations: Filter tab 'Email'",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal newLead opens",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal newLead closes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal addNote opens",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal addNote closes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal changeStage opens",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal changeStage closes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal sendSMS opens",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal sendSMS closes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal sendEmail opens",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal sendEmail closes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal editLead opens",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal editLead closes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal enrollFollowUp opens",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "T. CRM Dashboard Modals",
+      "name": "Modal enrollFollowUp closes",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "U. CRM Form Submissions",
+      "name": "Form: Create Lead submitted",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "U. CRM Form Submissions",
+      "name": "Form: Add Note modal set",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "V. Vendor Leads Dashboard",
+      "name": "Vendor Leads: page loads",
+      "passed": true,
+      "detail": "721 chars"
+    },
+    {
+      "category": "V. Vendor Leads Dashboard",
+      "name": "Vendor Leads: has title",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "V. Vendor Leads Dashboard",
+      "name": "Vendor Leads: stat cards render",
+      "passed": true,
+      "detail": "6 cards"
+    },
+    {
+      "category": "V. Vendor Leads Dashboard",
+      "name": "Vendor Leads: live feed present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "V. Vendor Leads Dashboard",
+      "name": "Vendor Leads: vendor content present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "V. Vendor Leads Dashboard",
+      "name": "Vendor Leads: search input",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "V. Vendor Leads Dashboard",
+      "name": "Vendor Leads: filter controls",
+      "passed": true,
+      "detail": "3 filters"
+    },
+    {
+      "category": "W. Marketing Website",
+      "name": "Website: page loads",
+      "passed": true,
+      "detail": "4404 chars"
+    },
+    {
+      "category": "W. Marketing Website",
+      "name": "Website: has Zoar branding",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "W. Marketing Website",
+      "name": "Website: form present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "W. Marketing Website",
+      "name": "Website: CTA button present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "category": "W. Marketing Website",
+      "name": "Website: navigation present",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "failures": [
+    {
+      "category": "I. Build Pipeline & Studio",
+      "name": "GET /api/studio/tasks",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/posting/preview",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/bookings/availability",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/seo/schema/faq",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/seo/schema/local-business",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/messenger/stats",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/messenger/conversations",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "P. Remaining GET Endpoints",
+      "name": "GET /api/scraper/groups",
+      "passed": false,
+      "detail": "500"
+    },
+    {
+      "category": "Q. Safe POST Endpoints",
+      "name": "POST /api/d3/personas",
+      "passed": false,
+      "detail": "timeout/error: timed out"
+    }
+  ]
+}

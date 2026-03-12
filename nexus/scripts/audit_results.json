@@ -1,0 +1,170 @@
+{
+  "timestamp": "20260306_140227",
+  "results": [
+    {
+      "page_name": "Bookings",
+      "load_time_ms": 1540,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 12,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/bookings_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "Talk to Nexus",
+      "load_time_ms": 1540,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 22,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/talk_to_nexus_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1,
+        "chat_input_found": true,
+        "response_received": true,
+        "response_time_ms": 504,
+        "responding_model": "ZAI"
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "Leads Pipeline",
+      "load_time_ms": 1533,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 12,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/leads_pipeline_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1,
+        "page_has_content": true,
+        "lead_elements_found": 33,
+        "negative_timestamps": false
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "Vendors",
+      "load_time_ms": 1534,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 45,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/vendors_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1,
+        "vendor_count_shown": "9,998",
+        "category_filter_found": true,
+        "wedding_venues_option": true,
+        "email_button_found": true,
+        "composer_opened": true,
+        "from_field_correct": true,
+        "subject_prefilled": true,
+        "body_has_signature": true,
+        "composer_screenshot": "/Users/kai/nexus/audit_screenshots/auditor/vendor_composer_20260306_140227.png"
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "Email Marketing",
+      "load_time_ms": 1535,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 15,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/email_marketing_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1,
+        "page_has_content": true,
+        "skip_button_found": true,
+        "skip_loaded_next": true,
+        "second_skip_works": true
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "Agent Control",
+      "load_time_ms": 1537,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 15,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/agent_control_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1,
+        "page_loaded": true,
+        "running_indicators": 5,
+        "stopped_indicators": 0
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "AI Fleet",
+      "load_time_ms": 1527,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 23,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/ai_fleet_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "Ad Performance",
+      "load_time_ms": 1547,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 18,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/ad_performance_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1,
+        "page_loaded": true,
+        "has_data": true
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "System Health",
+      "load_time_ms": 1540,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 13,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/system_health_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1
+      },
+      "overall_status": "pass"
+    },
+    {
+      "page_name": "Settings",
+      "load_time_ms": 1538,
+      "console_errors": [],
+      "console_warnings": [],
+      "api_errors": [],
+      "buttons_found": 13,
+      "screenshot_path": "/Users/kai/nexus/audit_screenshots/auditor/settings_20260306_140227.png",
+      "specific_checks": {
+        "content_length": 144,
+        "visible_errors": 1
+      },
+      "overall_status": "pass"
+    }
+  ]
+}

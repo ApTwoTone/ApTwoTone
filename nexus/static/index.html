@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus CRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/dashboard/css/dashboard.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="/dashboard/js/api.js"></script>
+    <script src="/dashboard/js/app.js"></script>
+</head>
+<body x-data x-init="$store.crm.init()">
+
+<!-- Loading bar -->
+<div class="loading-bar" x-show="$store.crm.loading" x-cloak></div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<div class="sidebar">
+    <div class="sidebar-logo">NEXUS CRM</div>
+    <nav class="sidebar-nav">
+        <div class="nav-item" :class="{ active: $store.crm.view === 'overview' }" @click="$store.crm.goTo('overview')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Overview
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'contacts' }" @click="$store.crm.goTo('contacts')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            Contacts
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'pipeline' }" @click="$store.crm.goTo('pipeline')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Pipeline
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'conversations' }" @click="$store.crm.goTo('conversations')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Conversations
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'activity' }" @click="$store.crm.goTo('activity')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Activity
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'metrics' }" @click="$store.crm.goTo('metrics')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            Metrics
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'automation' }" @click="$store.crm.goTo('automation')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v6l4 2"/></svg>
+            Automation
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'agents' || $store.crm.view === 'agent-detail' }" @click="$store.crm.goTo('agents')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            Agents
+        </div>
+        <div class="nav-item" :class="{ active: $store.crm.view === 'settings' }" @click="$store.crm.goTo('settings')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Settings
+        </div>
+    </nav>
+    <div class="sidebar-foot">
+        <a href="/">&larr; Back to Nexus Chat</a>
+    </div>
+</div>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+
+<!-- Header -->
+<div class="header">
+    <h1 x-text="
+        $store.crm.view === 'overview' ? 'Overview' :
+        $store.crm.view === 'contacts' ? 'Contacts' :
+        $store.crm.view === 'pipeline' ? 'Pipeline' :
+        $store.crm.view === 'detail' ? $store.crm.leadName($store.crm.selectedLead) :
+        $store.crm.view === 'conversations' ? 'Conversations' :
+        $store.crm.view === 'automation' ? 'Automation' :
+        $store.crm.view === 'metrics' ? 'Metrics & Analytics' :
+        $store.crm.view === 'agents' ? 'Agent Control Center' :
+        $store.crm.view === 'agent-detail' ? ($store.crm.agentDetail ? $store.crm.agentDetail.label : 'Agent') :
+        $store.crm.view === 'settings' ? 'Settings' :
+        'Activity'
+    "></h1>
+    <div class="flex items-center gap-2">
+        <template x-if="$store.crm.view === 'contacts'">
+            <div class="flex items-center gap-2">
+                <input type="text" placeholder="Search name, phone, email..." style="width: 240px;"
+                       x-model="$store.crm.query"
+                       @keydown.enter="$store.crm.search()"
+                       @input.debounce.400ms="$store.crm.search()">
+                <button class="btn btn-secondary btn-sm" @click="$store.crm.refreshNames()">Refresh Names</button>
+                <button class="btn btn-primary" @click="$store.crm.modal = 'newLead'">+ New Lead</button>
+            </div>
+        </template>
+        <template x-if="$store.crm.view === 'overview' || $store.crm.view === 'pipeline'">
+            <button class="btn btn-primary" @click="$store.crm.modal = 'newLead'">+ New Lead</button>
+        </template>
+        <template x-if="$store.crm.view === 'conversations'">
+            <button class="btn btn-secondary btn-sm" @click="$store.crm.bulkImport()" :disabled="$store.crm.bulkImporting" x-text="$store.crm.bulkImporting ? 'Importing...' : 'Import All'"></button>
+        </template>
+        <template x-if="$store.crm.view === 'metrics'">
+            <div class="flex items-center gap-2">
+                <button class="btn btn-secondary btn-sm" @click="$store.crm.loadMetrics()">Refresh</button>
+                <button class="btn btn-primary btn-sm" @click="$store.crm.runDropoutAnalysis()" :disabled="$store.crm.dropoutLoading" x-text="$store.crm.dropoutLoading ? 'Analyzing...' : 'Analyze Dropouts'"></button>
+            </div>
+        </template>
+        <template x-if="$store.crm.view === 'automation'">
+            <div class="flex items-center gap-2">
+                <button class="btn btn-secondary btn-sm" @click="$store.crm.loadAutomation()">Refresh</button>
+            </div>
+        </template>
+        <template x-if="$store.crm.view === 'agents'">
+            <div class="flex items-center gap-2">
+                <button class="btn btn-primary btn-sm" @click="$store.crm.generateAgentContent()" :disabled="$store.crm.agentGenerating" x-text="$store.crm.agentGenerating ? 'Generating...' : 'Generate Content'"></button>
+                <button class="btn btn-secondary btn-sm" @click="$store.crm.runAnalysis()" :disabled="$store.crm.agentAnalyzing" x-text="$store.crm.agentAnalyzing ? 'Running...' : 'Run Analysis'"></button>
+            </div>
+        </template>
+        <template x-if="$store.crm.view === 'agent-detail'">
+            <button class="btn btn-secondary btn-sm" @click="$store.crm.goTo('agents')">&larr; Back to Agents</button>
+        </template>
+        <template x-if="$store.crm.view === 'detail'">
+            <button class="btn btn-secondary" @click="$store.crm.goTo('contacts')">&larr; Back to Contacts</button>
+        </template>
+    </div>
+</div>
+
+<div class="content">
+
+<!-- ═══════════════════════════════════════════════════════════════
+     OVERVIEW
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'overview'">
+<div>
+    <!-- Stats -->
+    <div class="stat-grid">
+        <div class="card stat-card">
+            <div class="stat-num" x-text="$store.crm.stats.total || 0"></div>
+            <div class="stat-label">Total Leads</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num" style="color: var(--green);" x-text="$store.crm.stats.new_24h || 0"></div>
+            <div class="stat-label">New (24h)</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num" style="color: var(--cyan);" x-text="$store.crm.stats.upcoming_events || 0"></div>
+            <div class="stat-label">Upcoming Events</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num" style="color: var(--orange);" x-text="$store.crm.stats.deposits_pending || 0"></div>
+            <div class="stat-label">Deposits Pending</div>
+        </div>
+    </div>
+
+    <!-- Pipeline Bar -->
+    <div class="card mb-4">
+        <div class="card-title">Pipeline</div>
+        <div class="pipe-bar">
+            <template x-for="st in $store.crm.stages" :key="st.key">
+                <div class="pipe-pill" @click="$store.crm.stageFilter = st.key; $store.crm.goTo('contacts')">
+                    <div class="pipe-count" x-text="st.count"></div>
+                    <div class="pipe-label" x-text="st.label"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Source Breakdown -->
+    <div class="card mb-4" x-show="$store.crm.sourceStats && $store.crm.sourceStats.sources && $store.crm.sourceStats.sources.length > 0">
+        <div class="card-title">Lead Sources</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <template x-for="src in ($store.crm.sourceStats || {}).sources || []" :key="src.source">
+                <div style="flex:1;min-width:120px;text-align:center;padding:10px;background:var(--bg-card-alt);border-radius:8px;border:1px solid var(--border);">
+                    <div class="stat-num" style="font-size:1.3rem;" x-text="src.count || 0"></div>
+                    <div class="text-xs text-dim" style="text-transform:uppercase;letter-spacing:0.05em;" x-text="$store.crm.sourceLabel(src.source)"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-title">Recent Activity</div>
+        <div class="timeline" x-show="$store.crm.activity.length > 0">
+            <template x-for="ev in $store.crm.activity.slice(0, 15)" :key="ev.id">
+                <div class="tl-item" style="cursor:pointer;" @click="ev.lead_id && $store.crm.showDetail(ev.lead_id)">
+                    <div :class="$store.crm.tlDotClass(ev.event_type)"></div>
+                    <div class="tl-head">
+                        <span class="tl-time" x-text="$store.crm.formatTimeShort(ev.ts)"></span>
+                        <span class="tl-type" x-text="(ev.event_type||'').replace(/_/g, ' ')"></span>
+                        <span class="text-xs text-accent" x-text="ev.lead_name"></span>
+                    </div>
+                    <div class="tl-detail" x-text="ev.details"></div>
+                </div>
+            </template>
+        </div>
+        <div class="empty" x-show="$store.crm.activity.length === 0">No activity yet. Create a lead to get started.</div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CONTACTS
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'contacts'">
+<div>
+    <!-- Pipeline Filter Bar -->
+    <div class="card mb-4">
+        <div class="pipe-bar">
+            <div class="pipe-pill" :class="{ active: !$store.crm.stageFilter }" @click="$store.crm.stageFilter = ''; $store.crm.offset = 0; $store.crm.loadLeads();">
+                <div class="pipe-count" x-text="$store.crm.stats.total || 0"></div>
+                <div class="pipe-label">All</div>
+            </div>
+            <template x-for="st in $store.crm.stages" :key="st.key">
+                <div class="pipe-pill" :class="{ active: $store.crm.stageFilter === st.key }" @click="$store.crm.filterByStage(st.key)">
+                    <div class="pipe-count" x-text="st.count"></div>
+                    <div class="pipe-label" x-text="st.label"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Stage</th>
+                        <th>Event</th>
+                        <th>City</th>
+                        <th>Quote</th>
+                        <th>Source</th>
+                        <th>Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="lead in $store.crm.leads" :key="lead.id">
+                        <tr class="clickable" @click="$store.crm.showDetail(lead.id)">
+                            <td class="lead-name" x-text="$store.crm.leadName(lead)"></td>
+                            <td x-text="lead.phone || '-'"></td>
+                            <td class="truncate" x-text="lead.email || '-'"></td>
+                            <td><span class="badge" :class="$store.crm.badgeClass($store.crm.stageColor(lead.booking_status))" x-text="$store.crm.stageLabel(lead.booking_status || 'new_lead')"></span></td>
+                            <td x-text="$store.crm.formatDate(lead.event_date)"></td>
+                            <td x-text="lead.event_city || '-'"></td>
+                            <td x-text="$store.crm.money(lead.total_quote_amount)"></td>
+                            <td><span class="text-xs text-dim" x-text="lead.source || '-'"></span></td>
+                            <td class="text-xs text-dim" x-text="$store.crm.formatTimeShort(lead.updated_at)"></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+            <div class="empty" x-show="$store.crm.leads.length === 0">No leads found.</div>
+        </div>
+        <div class="pager" x-show="$store.crm.total > $store.crm.limit">
+            <button class="pager-btn" @click="$store.crm.prevPage()" :disabled="$store.crm.offset === 0">&laquo; Prev</button>
+            <span class="text-xs text-dim" x-text="'Page ' + $store.crm.page + ' of ' + $store.crm.totalPages"></span>
+            <button class="pager-btn" @click="$store.crm.nextPage()" :disabled="$store.crm.offset + $store.crm.limit >= $store.crm.total">Next &raquo;</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     PIPELINE (Kanban)
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'pipeline'">
+<div>
+    <div class="kanban">
+        <template x-for="st in $store.crm.stages" :key="st.key">
+            <div class="kanban-col">
+                <div class="kanban-head">
+                    <span class="kanban-head-label" :class="'badge-' + st.color" style="padding: 0;" x-text="st.label"></span>
+                    <span class="kanban-head-count" x-text="($store.crm.pipelineData[st.key] || []).length"></span>
+                </div>
+                <div class="kanban-body">
+                    <template x-for="lead in ($store.crm.pipelineData[st.key] || [])" :key="lead.id">
+                        <div class="kanban-card" @click="$store.crm.showDetail(lead.id)">
+                            <div class="kanban-card-name" x-text="$store.crm.leadName(lead)"></div>
+                            <div class="kanban-card-info" x-text="lead.phone || lead.email || ''"></div>
+                            <div class="kanban-card-info" x-show="lead.event_date" x-text="$store.crm.formatDate(lead.event_date) + (lead.event_city ? ' · ' + lead.event_city : '')"></div>
+                            <div class="kanban-card-info" x-show="lead.total_quote_amount" x-text="$store.crm.money(lead.total_quote_amount)"></div>
+                        </div>
+                    </template>
+                    <div class="kanban-empty" x-show="!($store.crm.pipelineData[st.key] || []).length">No leads</div>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LEAD DETAIL
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'detail' && $store.crm.selectedLead">
+<div>
+    <!-- Action Bar -->
+    <div class="card mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <span class="badge" :class="$store.crm.badgeClass($store.crm.stageColor($store.crm.selectedLead.booking_status))" style="font-size:0.75rem; padding:3px 12px;" x-text="$store.crm.stageLabel($store.crm.selectedLead.booking_status || 'new_lead')"></span>
+            <button class="btn btn-secondary btn-sm" @click="$store.crm.targetStage = ''; $store.crm.modal = 'changeStage'" x-show="$store.crm.getAllowedTransitions($store.crm.selectedLead.booking_status).length > 0">Change Stage</button>
+        </div>
+        <div class="flex items-center gap-2">
+            <button class="btn btn-cyan btn-sm" @click="$store.crm.smsText = ''; $store.crm.modal = 'sendSMS'" x-show="$store.crm.selectedLead.phone">SMS</button>
+            <button class="btn btn-secondary btn-sm" style="background:#3b0764;color:#c084fc;" @click="$store.crm.emailSubject = ''; $store.crm.emailBody = ''; $store.crm.modal = 'sendEmail'" x-show="$store.crm.selectedLead.email">Email</button>
+            <button class="btn btn-green btn-sm" @click="$store.crm.noteText = ''; $store.crm.modal = 'addNote'">+ Note</button>
+            <button class="btn btn-sm" style="background:#422006;color:#fb923c;" @click="$store.crm.modal = 'enrollFollowUp'">Follow-Up</button>
+            <button class="btn btn-secondary btn-sm" @click="$store.crm.openEditLead()">Edit</button>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <!-- ── LEFT COLUMN ── -->
+        <div>
+            <!-- Contact Info -->
+            <div class="card detail-section">
+                <div class="card-title">Contact Info</div>
+                <div class="info-grid">
+                    <div class="info-item"><label>First Name</label><div class="val" x-text="$store.crm.selectedLead.first_name || '-'"></div></div>
+                    <div class="info-item"><label>Last Name</label><div class="val" x-text="$store.crm.selectedLead.last_name || '-'"></div></div>
+                    <div class="info-item"><label>Phone</label><div class="val" x-text="$store.crm.selectedLead.phone || '-'"></div></div>
+                    <div class="info-item"><label>Email</label><div class="val" x-text="$store.crm.selectedLead.email || '-'"></div></div>
+                    <div class="info-item"><label>Source</label><div class="val" x-text="$store.crm.selectedLead.source || '-'"></div></div>
+                    <div class="info-item"><label>Added</label><div class="val" x-text="$store.crm.formatDate($store.crm.selectedLead.discovered_at)"></div></div>
+                </div>
+            </div>
+
+            <!-- Event Details -->
+            <div class="card detail-section">
+                <div class="card-title">Event Details</div>
+                <div class="info-grid">
+                    <div class="info-item"><label>Event Type</label><div class="val" x-text="$store.crm.eventTypeLabel($store.crm.selectedLead.event_type)"></div></div>
+                    <div class="info-item"><label>Event Date</label><div class="val" x-text="$store.crm.formatDate($store.crm.selectedLead.event_date)"></div></div>
+                    <div class="info-item"><label>City</label><div class="val" x-text="$store.crm.selectedLead.event_city || '-'"></div></div>
+                    <div class="info-item"><label>Address</label><div class="val" x-text="$store.crm.selectedLead.event_address || '-'"></div></div>
+                    <div class="info-item"><label>Guests</label><div class="val" x-text="$store.crm.selectedLead.guest_count || '-'"></div></div>
+                    <div class="info-item"><label>Time</label><div class="val" x-text="($store.crm.selectedLead.event_start_time || '-') + ' \u2013 ' + ($store.crm.selectedLead.event_end_time || '-')"></div></div>
+                    <div class="info-item span-2"><label>Terrain / Power Notes</label><div class="val" x-text="[$store.crm.selectedLead.terrain_notes, $store.crm.selectedLead.power_water_notes].filter(Boolean).join(' | ') || '-'"></div></div>
+                </div>
+            </div>
+
+            <!-- Financial -->
+            <div class="card detail-section">
+                <div class="card-title">Financial</div>
+                <div class="info-grid-3">
+                    <div class="info-item"><label>Quote</label><div class="val font-bold" x-text="$store.crm.money($store.crm.selectedLead.total_quote_amount)"></div></div>
+                    <div class="info-item"><label>Deposit</label><div class="val" x-text="$store.crm.money($store.crm.selectedLead.deposit_amount)"></div></div>
+                    <div class="info-item"><label>Deposit Status</label><div class="val" x-text="($store.crm.selectedLead.deposit_status || 'none').replace(/_/g, ' ')"></div></div>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="card detail-section">
+                <div class="card-title">Internal Notes</div>
+                <template x-for="note in $store.crm.parseNotes($store.crm.selectedLead.internal_notes)" :key="note.ts">
+                    <div class="note-item">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold" x-text="note.author"></span>
+                            <span class="text-xs text-dim" x-text="$store.crm.formatTimeShort(note.ts)"></span>
+                        </div>
+                        <div class="text-sm text-sec" style="margin-top:3px;" x-text="note.note"></div>
+                    </div>
+                </template>
+                <div class="empty" style="padding:12px 0;" x-show="$store.crm.parseNotes($store.crm.selectedLead.internal_notes).length === 0">No notes yet.</div>
+            </div>
+
+            <!-- Messages / Conversations -->
+            <div class="card detail-section">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="card-title" style="margin:0;">Conversations</div>
+                    <button class="btn btn-secondary btn-sm" @click="$store.crm.importConversations()"
+                            :disabled="$store.crm.importing"
+                            x-show="$store.crm.selectedLead.phone || $store.crm.selectedLead.email">
+                        <span x-show="!$store.crm.importing">Import History</span>
+                        <span x-show="$store.crm.importing">Importing...</span>
+                    </button>
+                </div>
+                <!-- Channel filter tabs -->
+                <div class="conv-tabs mb-3">
+                    <button class="conv-tab" :class="{ active: $store.crm.convFilter === 'all' }" @click="$store.crm.convFilter = 'all'">All</button>
+                    <button class="conv-tab" :class="{ active: $store.crm.convFilter === 'sms' }" @click="$store.crm.convFilter = 'sms'">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                        SMS
+                    </button>
+                    <button class="conv-tab" :class="{ active: $store.crm.convFilter === 'email' }" @click="$store.crm.convFilter = 'email'">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        Email
+                    </button>
+                </div>
+                <!-- Message list -->
+                <template x-for="msg in $store.crm.filteredMessages" :key="msg.id || msg.ts">
+                    <div class="msg-item" :class="msg.channel === 'sms' ? 'msg-channel-sms' : msg.channel === 'email' ? 'msg-channel-email' : ''">
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center gap-1">
+                                <template x-if="msg.channel === 'sms'">
+                                    <svg class="msg-channel-icon" width="14" height="14" fill="none" stroke="var(--cyan)" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+                                </template>
+                                <template x-if="msg.channel === 'email'">
+                                    <svg class="msg-channel-icon" width="14" height="14" fill="none" stroke="#c084fc" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                </template>
+                                <span class="msg-dir" :class="msg.direction === 'inbound' ? 'msg-in' : 'msg-out'" x-text="msg.direction === 'inbound' ? 'Received' : 'Sent'"></span>
+                            </span>
+                            <span class="text-xs text-dim" x-text="(msg.channel || '') + (msg.method && msg.method !== 'imported' ? ' · ' + msg.method : '')"></span>
+                        </div>
+                        <template x-if="msg.subject">
+                            <div class="msg-subject" x-text="msg.subject"></div>
+                        </template>
+                        <div class="msg-body" x-text="msg.content"></div>
+                        <div class="msg-meta" x-text="$store.crm.formatTime(msg.ts)"></div>
+                    </div>
+                </template>
+                <div class="empty" style="padding:12px 0;" x-show="$store.crm.filteredMessages.length === 0">No messages yet.</div>
+            </div>
+        </div>
+
+        <!-- ── RIGHT COLUMN: Timeline ── -->
+        <div>
+            <div class="card" style="position: sticky; top: 60px;">
+                <div class="card-title">Timeline</div>
+                <div class="timeline" x-show="$store.crm.timeline.length > 0">
+                    <template x-for="ev in $store.crm.timeline" :key="ev.id">
+                        <div class="tl-item">
+                            <div :class="$store.crm.tlDotClass(ev.event_type)"></div>
+                            <div class="tl-head">
+                                <span class="tl-time" x-text="$store.crm.formatTimeShort(ev.ts)"></span>
+                                <span class="tl-type" x-text="(ev.event_type||'').replace(/_/g, ' ')"></span>
+                            </div>
+                            <div class="tl-detail" x-text="ev.details"></div>
+                        </div>
+                    </template>
+                </div>
+                <div class="empty" x-show="$store.crm.timeline.length === 0">No activity yet.</div>
+            </div>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     ACTIVITY
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'activity'">
+<div>
+    <div class="card">
+        <div class="timeline" x-show="$store.crm.activity.length > 0">
+            <template x-for="ev in $store.crm.activity" :key="ev.id">
+                <div class="tl-item" style="cursor:pointer;" @click="ev.lead_id && $store.crm.showDetail(ev.lead_id)">
+                    <div :class="$store.crm.tlDotClass(ev.event_type)"></div>
+                    <div class="tl-head">
+                        <span class="tl-time" x-text="$store.crm.formatTimeShort(ev.ts)"></span>
+                        <span class="tl-type" x-text="(ev.event_type||'').replace(/_/g, ' ')"></span>
+                        <span class="text-xs text-accent" x-text="ev.lead_name"></span>
+                        <span class="text-xs text-dim" x-text="ev.lead_phone ? '(' + ev.lead_phone + ')' : ''"></span>
+                    </div>
+                    <div class="tl-detail" x-text="ev.details"></div>
+                </div>
+            </template>
+        </div>
+        <div class="empty" x-show="$store.crm.activity.length === 0">No activity yet. Activity will appear here as you work with leads.</div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CONVERSATIONS (Inbox)
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'conversations'">
+<div style="display:grid;grid-template-columns:340px 1fr;gap:16px;height:calc(100vh - 130px);">
+    <!-- Conversation List -->
+    <div class="card" style="overflow-y:auto;">
+        <input type="text" placeholder="Search conversations..." style="width:100%;margin-bottom:12px;"
+               x-model="$store.crm.convoQuery" @input.debounce.400ms="$store.crm.searchConversations()">
+        <div class="flex gap-2 mb-3">
+            <button class="btn btn-sm" :class="$store.crm.convFilter === 'all' ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.convFilter = 'all'">All</button>
+            <button class="btn btn-sm" :class="$store.crm.convFilter === 'sms' ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.convFilter = 'sms'">SMS</button>
+            <button class="btn btn-sm" :class="$store.crm.convFilter === 'email' ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.convFilter = 'email'">Email</button>
+        </div>
+        <template x-for="c in $store.crm.conversations" :key="c.lead_id">
+            <div class="convo-item" :class="{ active: $store.crm.convoLeadId === c.lead_id }" @click="$store.crm.openConversation(c.lead_id)" style="padding:10px;border-bottom:1px solid var(--border);cursor:pointer;">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold" x-text="c.lead_name || c.phone || 'Unknown'"></span>
+                    <span class="text-xs text-dim" x-text="$store.crm.formatTimeShort(c.last_message_at)"></span>
+                </div>
+                <div class="text-xs text-dim truncate" x-text="c.last_message || ''"></div>
+                <div class="text-xs text-dim" x-text="(c.sms_count || 0) + ' SMS, ' + (c.email_count || 0) + ' email'"></div>
+            </div>
+        </template>
+        <div class="empty" x-show="$store.crm.conversations.length === 0">No conversations yet.</div>
+    </div>
+    <!-- Message Thread -->
+    <div class="card" style="display:flex;flex-direction:column;">
+        <template x-if="$store.crm.convoLeadId">
+            <div style="flex:1;display:flex;flex-direction:column;">
+                <div style="flex:1;overflow-y:auto;padding-bottom:12px;">
+                    <template x-for="msg in $store.crm.convoMessages" :key="msg.id || msg.ts">
+                        <div class="msg-item" :class="msg.direction === 'outbound' ? 'msg-out-bubble' : 'msg-in-bubble'" style="margin-bottom:8px;padding:8px 12px;border-radius:8px;">
+                            <div class="flex justify-between items-center">
+                                <span class="msg-dir text-xs" :class="msg.direction === 'inbound' ? 'msg-in' : 'msg-out'" x-text="msg.direction === 'inbound' ? 'Received' : 'Sent'"></span>
+                                <span class="text-xs text-dim" x-text="(msg.channel || '') + ' · ' + $store.crm.formatTimeShort(msg.ts)"></span>
+                            </div>
+                            <template x-if="msg.subject"><div class="text-xs font-bold mt-1" x-text="msg.subject"></div></template>
+                            <div class="text-sm mt-1" x-text="msg.content"></div>
+                        </div>
+                    </template>
+                    <div class="empty" x-show="$store.crm.convoMessages.length === 0">No messages. Click Import All to load message history.</div>
+                </div>
+                <!-- Compose -->
+                <div style="border-top:1px solid var(--border);padding-top:12px;">
+                    <textarea x-model="$store.crm.convoReply" placeholder="Type a message..." rows="2" style="width:100%;margin-bottom:8px;"></textarea>
+                    <div class="flex gap-2">
+                        <button class="btn btn-cyan btn-sm" @click="$store.crm.sendConvoSMS()" :disabled="!$store.crm.convoReply.trim()">Send SMS</button>
+                        <button class="btn btn-sm" style="background:#3b0764;color:#c084fc;" @click="$store.crm.sendConvoEmail()" :disabled="!$store.crm.convoReply.trim()">Send Email</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template x-if="!$store.crm.convoLeadId">
+            <div class="empty" style="margin:auto;">Select a conversation to view messages.</div>
+        </template>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     AUTOMATION (Follow-Ups + Templates)
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'automation'">
+<div>
+    <!-- Follow-Up Stats -->
+    <div class="stat-grid mb-4">
+        <div class="card stat-card">
+            <div class="stat-num" style="color: var(--green);" x-text="$store.crm.followUps.filter(f => f.status === 'active').length"></div>
+            <div class="stat-label">Active Sequences</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num" style="color: var(--cyan);" x-text="$store.crm.followUps.filter(f => f.status === 'completed').length"></div>
+            <div class="stat-label">Completed</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num" style="color: var(--yellow);" x-text="$store.crm.followUps.filter(f => f.status === 'paused').length"></div>
+            <div class="stat-label">Paused</div>
+        </div>
+        <div class="card stat-card">
+            <div class="stat-num" x-text="$store.crm.templates.length"></div>
+            <div class="stat-label">Templates</div>
+        </div>
+    </div>
+
+    <!-- Active Follow-Up Sequences -->
+    <div class="card mb-4">
+        <div class="card-title">Follow-Up Sequences</div>
+        <div class="table-wrap" x-show="$store.crm.followUps.length > 0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lead</th>
+                        <th>Type</th>
+                        <th>Step</th>
+                        <th>Status</th>
+                        <th>Next Follow-Up</th>
+                        <th>Reason</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="fu in $store.crm.followUps" :key="fu.lead_id || fu.id">
+                        <tr>
+                            <td class="lead-name" style="cursor:pointer;" @click="fu.lead_id && $store.crm.showDetail(fu.lead_id)" x-text="fu.lead_name || ('Lead #' + fu.lead_id)"></td>
+                            <td><span class="badge badge-cyan text-xs" x-text="fu.sequence_type || 'default'"></span></td>
+                            <td x-text="(fu.current_step || 0) + '/' + (fu.total_steps || '?')"></td>
+                            <td>
+                                <span class="badge text-xs"
+                                    :class="fu.status === 'active' ? 'badge-green' : fu.status === 'completed' ? 'badge-blue' : fu.status === 'stopped' ? 'badge-red' : 'badge-yellow'"
+                                    x-text="fu.status || 'unknown'"></span>
+                            </td>
+                            <td class="text-xs" x-text="fu.next_followup_at ? $store.crm.formatTime(fu.next_followup_at) : '-'"></td>
+                            <td class="text-xs text-dim" x-text="fu.stop_reason || '-'"></td>
+                            <td>
+                                <button class="btn btn-sm" style="background:var(--red);color:white;padding:2px 10px;font-size:0.65rem;"
+                                        x-show="fu.status === 'active'"
+                                        @click="$store.crm.stopFollowUp(fu.lead_id)">Stop</button>
+                                <span class="text-xs text-dim" x-show="fu.status !== 'active'" x-text="fu.status === 'completed' ? '✓' : '—'"></span>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty" x-show="$store.crm.followUps.length === 0">
+            No follow-up sequences yet. Sequences are auto-created when new leads come in from Facebook or the website.
+        </div>
+    </div>
+
+    <!-- SMS / Email Templates -->
+    <div class="card">
+        <div class="card-title">Message Templates</div>
+        <!-- Category filter -->
+        <div class="flex gap-2 mb-3" style="flex-wrap:wrap;">
+            <button class="btn btn-sm" :class="!$store.crm.templateFilter ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.templateFilter = ''">All</button>
+            <template x-for="cat in $store.crm.templateCategories" :key="cat">
+                <button class="btn btn-sm" :class="$store.crm.templateFilter === cat ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.templateFilter = cat" x-text="cat.replace(/_/g, ' ')"></button>
+            </template>
+        </div>
+
+        <!-- Template cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">
+            <template x-for="tpl in $store.crm.filteredTemplates" :key="tpl.id">
+                <div class="card" style="padding:14px;cursor:pointer;border:2px solid transparent;transition:border-color 0.15s;"
+                     :style="$store.crm.selectedTemplate && $store.crm.selectedTemplate.id === tpl.id ? 'border-color:var(--accent);' : ''"
+                     @click="$store.crm.selectTemplate(tpl)">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold" x-text="tpl.name"></span>
+                        <span class="badge badge-cyan text-xs" x-text="tpl.category || ''"></span>
+                    </div>
+                    <div class="text-xs text-sec" style="white-space:pre-line;max-height:80px;overflow:hidden;" x-text="tpl.body || tpl.content || ''"></div>
+                    <div class="text-xs text-dim mt-2" x-show="tpl.subject" x-text="'Subject: ' + (tpl.subject || '')"></div>
+                </div>
+            </template>
+        </div>
+        <div class="empty" x-show="$store.crm.filteredTemplates.length === 0">No templates found.</div>
+
+        <!-- Send Template Panel -->
+        <div x-show="$store.crm.selectedTemplate" class="card mt-4" style="background:var(--bg-card-alt);border-color:var(--accent);">
+            <div class="card-title" style="color:var(--accent);">Send Template</div>
+            <div class="flex items-center gap-3 mb-3">
+                <span class="text-sm">Selected: <strong x-text="$store.crm.selectedTemplate ? $store.crm.selectedTemplate.name : ''"></strong></span>
+                <button class="btn btn-sm btn-secondary" @click="$store.crm.selectedTemplate = null" style="padding:2px 8px;font-size:0.6rem;">✕ Clear</button>
+            </div>
+            <div class="flex items-center gap-3">
+                <div>
+                    <label class="field-label" style="font-size:0.65rem;">Lead ID</label>
+                    <input type="number" x-model="$store.crm.templateLeadId" placeholder="Lead ID" style="width:100px;">
+                </div>
+                <div>
+                    <label class="field-label" style="font-size:0.65rem;">Channel</label>
+                    <select x-model="$store.crm.templateChannel" style="width:100px;">
+                        <option value="sms">SMS</option>
+                        <option value="email">Email</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary btn-sm" style="margin-top:16px;"
+                        @click="$store.crm.sendTemplateToLead()"
+                        :disabled="$store.crm.templateSending || !$store.crm.templateLeadId"
+                        x-text="$store.crm.templateSending ? 'Sending...' : 'Send Template'"></button>
+            </div>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     METRICS & ANALYTICS
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'metrics'">
+<div>
+    <div x-show="$store.crm.metricsLoading" class="text-center text-dim" style="padding:40px;">Loading metrics...</div>
+    <div x-show="!$store.crm.metricsLoading">
+        <!-- Key Metrics -->
+        <div class="metrics-stat-grid mb-4">
+            <div class="card metric-big-card"><div class="stat-num" x-text="'$' + ($store.crm.metrics.cost_per_lead || 0).toFixed(2)"></div><div class="stat-label">Cost per Lead</div></div>
+            <div class="card metric-big-card"><div class="stat-num" x-text="($store.crm.metrics.click_through_rate || 0).toFixed(1) + '%'"></div><div class="stat-label">Click-Through Rate</div></div>
+            <div class="card metric-big-card"><div class="stat-num" x-text="($store.crm.metrics.conversion_rate || 0).toFixed(1) + '%'"></div><div class="stat-label">Conversion Rate</div></div>
+            <div class="card metric-big-card"><div class="stat-num" x-text="'$' + ($store.crm.metrics.total_spend || 0).toFixed(0)"></div><div class="stat-label">Total Ad Spend</div></div>
+            <div class="card metric-big-card"><div class="stat-num" x-text="$store.crm.metrics.total_leads || 0"></div><div class="stat-label">Total Leads</div></div>
+            <div class="card metric-big-card"><div class="stat-num" x-text="$store.crm.metrics.total_impressions || 0"></div><div class="stat-label">Impressions</div></div>
+        </div>
+
+        <!-- Campaign Performance -->
+        <div class="card mb-4" x-show="$store.crm.campaignMetrics.length > 0">
+            <div class="card-title">Campaign Performance</div>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Campaign</th><th>Spend</th><th>Impressions</th><th>Clicks</th><th>CTR</th><th>Leads</th><th>CPL</th><th>Conv Rate</th></tr></thead>
+                    <tbody>
+                        <template x-for="c in $store.crm.campaignMetrics" :key="c.campaign">
+                            <tr>
+                                <td class="text-sm" x-text="c.campaign"></td>
+                                <td x-text="'$' + (c.spend || 0).toFixed(0)"></td>
+                                <td x-text="c.impressions || 0"></td>
+                                <td x-text="c.clicks || 0"></td>
+                                <td x-text="(c.ctr || 0).toFixed(1) + '%'"></td>
+                                <td x-text="c.leads || 0"></td>
+                                <td x-text="'$' + (c.cpl || 0).toFixed(2)"></td>
+                                <td x-text="(c.conversion_rate || 0).toFixed(1) + '%'"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Conversion Funnel + Website Stats -->
+        <div class="metrics-two-col mb-4">
+            <div class="card">
+                <div class="card-title">Conversion Funnel</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="flex justify-between"><span class="text-sm">Impressions</span><span class="text-sm font-bold" x-text="$store.crm.metrics.total_impressions || 0"></span></div>
+                    <div class="flex justify-between"><span class="text-sm">Clicks</span><span class="text-sm font-bold" x-text="$store.crm.metrics.total_clicks || 0"></span></div>
+                    <div class="flex justify-between"><span class="text-sm">Leads</span><span class="text-sm font-bold" x-text="$store.crm.metrics.total_leads || 0"></span></div>
+                    <div class="flex justify-between"><span class="text-sm">Bookings</span><span class="text-sm font-bold" x-text="$store.crm.metrics.total_bookings || 0"></span></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Website & Pixel</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div class="flex justify-between"><span class="text-sm">Page Views</span><span class="text-sm font-bold" x-text="$store.crm.metrics.website_pageviews || 0"></span></div>
+                    <div class="flex justify-between"><span class="text-sm">Unique Visitors</span><span class="text-sm font-bold" x-text="$store.crm.metrics.website_visitors || 0"></span></div>
+                    <div class="flex justify-between"><span class="text-sm">Pixel Events</span><span class="text-sm font-bold" x-text="$store.crm.metrics.pixel_events || 0"></span></div>
+                    <div class="flex justify-between"><span class="text-sm">Form Submissions</span><span class="text-sm font-bold" x-text="$store.crm.metrics.form_submissions || 0"></span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropout Analysis -->
+        <div class="card" x-show="$store.crm.dropoutDiagnoses.length > 0">
+            <div class="card-title">Lead Dropout Analysis</div>
+            <template x-for="d in $store.crm.dropoutDiagnoses" :key="d.lead_id">
+                <div style="padding:10px 0;border-bottom:1px solid var(--border);">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold" x-text="d.lead_name || d.phone || ('Lead #' + d.lead_id)"></span>
+                        <span class="badge badge-red text-xs" x-text="d.dropout_stage || ''"></span>
+                    </div>
+                    <div class="text-xs mt-1" x-text="d.diagnosis || ''"></div>
+                    <div class="text-xs text-dim mt-1" x-text="d.recommendation || ''"></div>
+                </div>
+            </template>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     AGENTS
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'agents'">
+<div>
+    <!-- Agent Cards Grid -->
+    <div class="agent-grid mb-4">
+        <template x-for="a in $store.crm.agentCards" :key="a.id">
+            <div class="card agent-card" @click="$store.crm.showAgentDetail(a.id)" style="cursor:pointer;">
+                <div class="flex justify-between items-center mb-2">
+                    <span style="font-size:1.5rem;" x-text="a.icon"></span>
+                    <span class="badge text-xs" :class="a.running ? 'badge-green' : 'badge-blue'" x-text="a.running ? 'RUNNING' : 'IDLE'"></span>
+                </div>
+                <div class="text-sm font-bold" x-text="a.label"></div>
+                <div class="text-xs text-dim" x-text="a.stat_line || 'No activity'"></div>
+                <div class="text-xs text-dim" x-show="a.last_active" x-text="'Last: ' + $store.crm.formatTimeShort(a.last_active)"></div>
+            </div>
+        </template>
+    </div>
+    <div class="empty" x-show="($store.crm.agentCards || []).length === 0">No agents configured.</div>
+
+    <!-- Live Activity Feed -->
+    <div class="card mt-4">
+        <div class="card-title">Live Activity Feed</div>
+        <div class="agent-feed" style="max-height:300px;overflow-y:auto;">
+            <template x-for="(f, fi) in $store.crm.agentFeed" :key="fi">
+                <div class="feed-item" style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:baseline;">
+                    <span class="text-xs text-dim" style="min-width:50px;" x-text="$store.crm.formatTimeShort(f.ts)"></span>
+                    <span class="badge badge-cyan text-xs" x-text="'[' + (f.source || f.agent || f.source_agent || '') + ']'"></span>
+                    <span class="text-xs" x-text="f.content || f.action || ''"></span>
+                </div>
+            </template>
+        </div>
+        <div class="empty" x-show="$store.crm.agentFeed.length === 0">No activity yet. Start an agent to see live data.</div>
+    </div>
+
+    <!-- Brain Section -->
+    <div class="card mt-4">
+        <div class="card-title">Shared Brain</div>
+        <div class="brain-tabs mb-3" style="display:flex;gap:4px;">
+            <button class="btn btn-sm" :class="$store.crm.brainTab === 'insights' ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.brainTab = 'insights'">Insights</button>
+            <button class="btn btn-sm" :class="$store.crm.brainTab === 'knowledge' ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.brainTab = 'knowledge'; $store.crm.loadBrainKnowledge()">Knowledge</button>
+            <button class="btn btn-sm" :class="$store.crm.brainTab === 'discussions' ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.brainTab = 'discussions'; $store.crm.loadBrainDiscussions()">Discussions</button>
+        </div>
+        <!-- Insights Tab -->
+        <div x-show="$store.crm.brainTab === 'insights'">
+            <template x-for="(ins, ii) in $store.crm.brainInsights.slice(0, 10)" :key="ins.id || ii">
+                <div style="padding:6px 0;border-bottom:1px solid var(--border);">
+                    <div class="text-xs" x-text="ins.content"></div>
+                    <div class="text-xs text-dim" x-text="(ins.source_agent || '') + ' · ' + (ins.category || '') + ' · ' + $store.crm.formatTimeShort(ins.ts)"></div>
+                </div>
+            </template>
+            <div class="empty" x-show="$store.crm.brainInsights.length === 0">No insights yet.</div>
+        </div>
+        <!-- Knowledge Tab -->
+        <div x-show="$store.crm.brainTab === 'knowledge'">
+            <template x-for="k in $store.crm.brainKnowledge" :key="k.id">
+                <div style="padding:8px 0;border-bottom:1px solid var(--border);">
+                    <div class="text-xs" style="color:var(--red);" x-text="'Problem: ' + (k.problem || '')"></div>
+                    <div class="text-xs mt-1" style="color:var(--green);" x-text="'Solution: ' + (k.solution || '')"></div>
+                    <div class="text-xs text-dim mt-1" x-text="(k.category || '') + ' · Used ' + (k.times_referenced || 0) + ' times'"></div>
+                </div>
+            </template>
+            <div class="empty" x-show="$store.crm.brainKnowledge.length === 0">No knowledge entries yet.</div>
+        </div>
+        <!-- Discussions Tab -->
+        <div x-show="$store.crm.brainTab === 'discussions'">
+            <template x-for="d in $store.crm.brainDiscussions" :key="d.id">
+                <div style="padding:8px 0;border-bottom:1px solid var(--border);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <span class="text-xs font-bold" x-text="d.topic || ''"></span>
+                        <span class="badge text-xs" :class="d.resolved ? 'badge-green' : 'badge-yellow'" x-text="d.resolved ? 'Resolved' : 'Open'"></span>
+                    </div>
+                    <div class="text-xs text-dim mt-1" x-text="d.content || ''"></div>
+                    <div class="text-xs text-dim" x-text="(d.source_agent || '') + ' · ' + (d.message_type || '')"></div>
+                </div>
+            </template>
+            <div class="empty" x-show="$store.crm.brainDiscussions.length === 0">No discussions yet.</div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stat-grid mt-4">
+        <div class="card stat-card"><div class="stat-num" x-text="$store.crm.agentQuickStats.total_insights || 0"></div><div class="stat-label">Brain Insights</div></div>
+        <div class="card stat-card"><div class="stat-num" x-text="$store.crm.agentQuickStats.leads_found || 0"></div><div class="stat-label">Leads Found</div></div>
+        <div class="card stat-card"><div class="stat-num" x-text="$store.crm.agentQuickStats.content_queued || 0"></div><div class="stat-label">Content Queued</div></div>
+        <div class="card stat-card"><div class="stat-num" x-text="'$' + ($store.crm.agentTotalCost || 0).toFixed(3)"></div><div class="stat-label">Total API Cost</div></div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     AGENT DETAIL
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'agent-detail' && $store.crm.agentDetail">
+<div>
+    <div class="card mb-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span style="font-size:2rem;" x-text="$store.crm.agentDetail.icon"></span>
+                <div>
+                    <div class="text-lg font-bold" x-text="$store.crm.agentDetail.label"></div>
+                    <div class="text-xs text-dim" x-text="$store.crm.agentDetail.stat_line || 'No activity'"></div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="badge" :class="$store.crm.agentDetail.running ? 'badge-green' : 'badge-blue'" x-text="$store.crm.agentDetail.running ? 'RUNNING' : 'IDLE'"></span>
+                <button class="btn btn-green btn-sm" @click="$store.crm.startAgent($store.crm.agentDetail.id)" x-show="!$store.crm.agentDetail.running">Start</button>
+                <button class="btn btn-sm" style="background:var(--red);color:white;" @click="$store.crm.stopAgent($store.crm.agentDetail.id)" x-show="$store.crm.agentDetail.running">Stop</button>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">Live Log</div>
+        <div style="background:var(--bg);border-radius:6px;padding:12px;max-height:500px;overflow-y:auto;font-family:'Fira Code',monospace;font-size:0.75rem;line-height:1.5;">
+            <template x-for="(line, i) in $store.crm.agentLog" :key="i">
+                <div class="text-xs" x-text="line"></div>
+            </template>
+            <div class="empty" x-show="$store.crm.agentLog.length === 0">No log entries yet. Start the agent to see output.</div>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SETTINGS
+     ═══════════════════════════════════════════════════════════════ -->
+<template x-if="$store.crm.view === 'settings'">
+<div>
+    <!-- System Health -->
+    <div class="card mb-4" x-data="{ hc: null }" x-init="try { hc = await API.getHealth() } catch(e) {}">
+        <div class="card-title">System Health</div>
+        <template x-if="hc">
+            <div>
+                <div class="stat-grid" style="margin-bottom:12px;">
+                    <div class="card stat-card" style="padding:10px;">
+                        <div class="stat-num" style="font-size:1.1rem;" :style="hc.healthy ? 'color:var(--green);' : 'color:var(--red);'" x-text="hc.healthy ? 'HEALTHY' : 'ISSUES'"></div>
+                        <div class="stat-label">Overall</div>
+                    </div>
+                    <div class="card stat-card" style="padding:10px;">
+                        <div class="stat-num" style="font-size:1.1rem;" :style="(hc.checks||{}).database && (hc.checks||{}).database.includes('ok') ? 'color:var(--green);' : 'color:var(--red);'" x-text="(hc.checks||{}).database && (hc.checks||{}).database.includes('ok') ? '✓ OK' : '✕ DOWN'"></div>
+                        <div class="stat-label">Database</div>
+                    </div>
+                    <div class="card stat-card" style="padding:10px;">
+                        <div class="stat-num" style="font-size:1.1rem;" :style="(hc.checks||{}).messaging && (hc.checks||{}).messaging.includes('ok') ? 'color:var(--green);' : 'color:var(--yellow);'" x-text="(hc.checks||{}).messaging && (hc.checks||{}).messaging.includes('ok') ? '✓ OK' : '— N/A'"></div>
+                        <div class="stat-label">Messaging</div>
+                    </div>
+                    <div class="card stat-card" style="padding:10px;">
+                        <div class="stat-num" style="font-size:1.1rem;" :style="(hc.checks||{}).followup_engine && (hc.checks||{}).followup_engine.includes('ok') ? 'color:var(--green);' : 'color:var(--yellow);'" x-text="(hc.checks||{}).followup_engine && (hc.checks||{}).followup_engine.includes('ok') ? '✓ OK' : '— N/A'"></div>
+                        <div class="stat-label">Follow-Up Engine</div>
+                    </div>
+                </div>
+                <div class="text-xs text-dim">
+                    <span x-text="'DB: ' + ((hc.checks||{}).database || 'unknown')"></span>
+                    <span> · Pipeline: <span x-text="(hc.checks||{}).pipeline || 'unknown'"></span></span>
+                </div>
+            </div>
+        </template>
+        <div class="empty" x-show="!hc">Loading health data...</div>
+    </div>
+
+    <!-- Backups -->
+    <div class="card mb-4" x-data="{ bkList: [], async refresh() { try { let d = await API.getBackups(); this.bkList = d.backups || []; } catch(e) {} }, async makeBackup() { try { let r = await API.createBackup(); $store.crm.showToast(r.ok ? 'Backup created' : 'Failed'); await this.refresh(); } catch(e) { $store.crm.showToast(e.message, 'error'); } } }" x-init="refresh()">
+        <div class="flex justify-between items-center mb-3">
+            <div class="card-title" style="margin:0;">Database Backups</div>
+            <button class="btn btn-primary btn-sm" @click="makeBackup()">Create Backup Now</button>
+        </div>
+        <div x-show="bkList.length > 0">
+            <template x-for="b in bkList" :key="b.name">
+                <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <span class="text-sm" x-text="b.name || ''"></span>
+                        <span class="text-xs text-dim" x-text="b.size_mb ? ' (' + b.size_mb.toFixed(1) + ' MB)' : ''"></span>
+                    </div>
+                    <span class="text-xs text-dim" x-text="b.created ? $store.crm.formatTime(b.created) : ''"></span>
+                </div>
+            </template>
+        </div>
+        <div class="empty" x-show="bkList.length === 0">No backups yet. Backups run daily at midnight automatically.</div>
+        <div class="text-xs text-dim mt-2">Auto-backup: daily · Keeps last 7 · Stored in ~/.nexus/backups/</div>
+    </div>
+
+    <!-- Auto Follow-up -->
+    <div class="card mb-4">
+        <div class="card-title">Auto Follow-up Pipeline</div>
+        <div class="settings-row">
+            <div>
+                <div class="settings-label">Auto Follow-up</div>
+                <div class="text-xs text-dim">Automatically send SMS + email to new leads</div>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" :checked="$store.crm.settings.auto_followup_enabled" @change="$store.crm.toggleSetting('auto_followup_enabled', $event.target.checked)">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="settings-row">
+            <div>
+                <div class="settings-label">Kai SMS Notifications</div>
+                <div class="text-xs text-dim">Send SMS alerts to (818) 448-9055 for new leads, replies, follow-ups</div>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" :checked="$store.crm.settings.kai_notifications" @change="$store.crm.toggleSetting('kai_notifications', $event.target.checked)">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        <div class="settings-info mt-3">
+            <div class="text-xs text-dim">Timing: 2 min delay before SMS · 2 min after SMS before email · 48h between follow-ups</div>
+        </div>
+    </div>
+
+    <!-- Facebook Integration -->
+    <div class="card mb-4">
+        <div class="card-title">Facebook Lead Ads</div>
+        <div class="settings-row">
+            <div>
+                <div class="settings-label">Webhook URL</div>
+                <div class="text-xs text-dim" style="word-break:break-all;" x-text="($store.crm.settings.fb_webhook_domain || window.location.origin) + '/api/crm/webhook/facebook'"></div>
+            </div>
+            <button class="btn btn-secondary btn-sm" @click="$store.crm.copyWebhookUrl()">Copy</button>
+        </div>
+        <div class="settings-row">
+            <div>
+                <div class="settings-label">Verify Token</div>
+                <input type="text" style="width:240px;margin-top:4px;" x-model="$store.crm.settings.fb_verify_token" @change="$store.crm.toggleSetting('fb_verify_token', $store.crm.settings.fb_verify_token)">
+            </div>
+        </div>
+        <div class="settings-row">
+            <div>
+                <div class="settings-label">Webhook Domain (optional)</div>
+                <input type="text" style="width:300px;margin-top:4px;" placeholder="https://your-domain.com" x-model="$store.crm.settings.fb_webhook_domain" @change="$store.crm.toggleSetting('fb_webhook_domain', $store.crm.settings.fb_webhook_domain)">
+            </div>
+        </div>
+        <div class="flex items-center gap-3 mt-3">
+            <button class="btn btn-primary btn-sm" @click="$store.crm.testFacebookWebhook()">Test Webhook</button>
+            <span class="text-xs text-dim" x-show="$store.crm.fbStats">
+                <span x-text="$store.crm.fbStats.total_fb_leads || 0"></span> FB leads
+                <template x-if="$store.crm.fbStats.last_fb_lead_at">
+                    <span> · Last: <span x-text="$store.crm.formatTimeShort($store.crm.fbStats.last_fb_lead_at)"></span></span>
+                </template>
+            </span>
+        </div>
+    </div>
+</div>
+</template>
+
+</div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ═══════════════════════════════════════════════════════════════
+     MODALS
+     ═══════════════════════════════════════════════════════════════ -->
+
+<!-- New Lead -->
+<template x-if="$store.crm.modal === 'newLead'">
+<div class="modal-bg" @click.self="$store.crm.modal = ''">
+    <div class="modal-box">
+        <h2>New Lead</h2>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">First Name</label><input x-model="$store.crm.newLead.first_name" placeholder="John"></div>
+            <div><label class="field-label">Last Name</label><input x-model="$store.crm.newLead.last_name" placeholder="Doe"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">Phone</label><input x-model="$store.crm.newLead.phone" placeholder="5551234567"></div>
+            <div><label class="field-label">Email</label><input x-model="$store.crm.newLead.email" placeholder="john@example.com"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div>
+                <label class="field-label">Event Type</label>
+                <select x-model="$store.crm.newLead.event_type">
+                    <option value="">Select...</option>
+                    <option value="wedding">Wedding</option>
+                    <option value="corporate">Corporate</option>
+                    <option value="construction">Construction</option>
+                    <option value="festival">Festival</option>
+                    <option value="private_party">Private Party</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div><label class="field-label">Event Date</label><input type="date" x-model="$store.crm.newLead.event_date"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">City</label><input x-model="$store.crm.newLead.event_city" placeholder="Miami"></div>
+            <div><label class="field-label">Guest Count</label><input type="number" x-model="$store.crm.newLead.guest_count" placeholder="100"></div>
+        </div>
+        <div class="mb-3"><label class="field-label">Notes</label><textarea x-model="$store.crm.newLead.notes" placeholder="Any initial notes..." rows="2"></textarea></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" @click="$store.crm.modal = ''">Cancel</button>
+            <button class="btn btn-primary" @click="$store.crm.createLead()">Create Lead</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- Add Note -->
+<template x-if="$store.crm.modal === 'addNote'">
+<div class="modal-bg" @click.self="$store.crm.modal = ''">
+    <div class="modal-box">
+        <h2>Add Note</h2>
+        <textarea x-model="$store.crm.noteText" placeholder="Enter your note..." rows="4" class="mb-3" x-ref="noteInput" x-init="$nextTick(() => $refs.noteInput.focus())"></textarea>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" @click="$store.crm.modal = ''">Cancel</button>
+            <button class="btn btn-primary" @click="$store.crm.submitNote()">Save Note</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- Change Stage -->
+<template x-if="$store.crm.modal === 'changeStage' && $store.crm.selectedLead">
+<div class="modal-bg" @click.self="$store.crm.modal = ''">
+    <div class="modal-box">
+        <h2>Change Stage</h2>
+        <p class="text-sm text-sec mb-4">Current: <span class="badge" :class="$store.crm.badgeClass($store.crm.stageColor($store.crm.selectedLead.booking_status))" x-text="$store.crm.stageLabel($store.crm.selectedLead.booking_status)"></span></p>
+        <div style="display:flex;flex-direction:column;gap:6px;" class="mb-3">
+            <template x-for="t in $store.crm.getAllowedTransitions($store.crm.selectedLead.booking_status)" :key="t">
+                <button class="btn w-full" :class="$store.crm.targetStage === t ? 'btn-primary' : 'btn-secondary'" @click="$store.crm.targetStage = t" x-text="$store.crm.stageLabel(t)"></button>
+            </template>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" @click="$store.crm.modal = ''">Cancel</button>
+            <button class="btn btn-primary" @click="$store.crm.changeStage()" :disabled="!$store.crm.targetStage" :style="!$store.crm.targetStage ? 'opacity:0.4;cursor:not-allowed;' : ''">Confirm</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- Send SMS -->
+<template x-if="$store.crm.modal === 'sendSMS' && $store.crm.selectedLead">
+<div class="modal-bg" @click.self="$store.crm.modal = ''">
+    <div class="modal-box">
+        <h2>Send SMS</h2>
+        <p class="text-xs text-dim mb-3">To: <span x-text="$store.crm.selectedLead.phone"></span></p>
+        <textarea x-model="$store.crm.smsText" placeholder="Type your message..." rows="4" class="mb-3" x-ref="smsInput" x-init="$nextTick(() => $refs.smsInput.focus())"></textarea>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" @click="$store.crm.modal = ''">Cancel</button>
+            <button class="btn btn-cyan" @click="$store.crm.submitSMS()" :disabled="!$store.crm.smsText.trim()">Send SMS</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- Send Email -->
+<template x-if="$store.crm.modal === 'sendEmail' && $store.crm.selectedLead">
+<div class="modal-bg" @click.self="$store.crm.modal = ''">
+    <div class="modal-box">
+        <h2>Send Email</h2>
+        <p class="text-xs text-dim mb-3">To: <span x-text="$store.crm.selectedLead.email"></span></p>
+        <div class="mb-3"><label class="field-label">Subject</label><input x-model="$store.crm.emailSubject" placeholder="Message from Zoar Bathroom Rentals"></div>
+        <div class="mb-3"><label class="field-label">Body</label><textarea x-model="$store.crm.emailBody" placeholder="Type your email..." rows="5" x-ref="emailInput" x-init="$nextTick(() => $refs.emailInput.focus())"></textarea></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" @click="$store.crm.modal = ''">Cancel</button>
+            <button class="btn btn-primary" style="background:#7c3aed;" @click="$store.crm.submitEmail()" :disabled="!$store.crm.emailBody.trim()">Send Email</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- Edit Lead -->
+<template x-if="$store.crm.modal === 'editLead' && $store.crm.selectedLead">
+<div class="modal-bg" @click.self="$store.crm.modal = ''">
+    <div class="modal-box" style="max-width:560px;">
+        <h2>Edit Lead</h2>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">First Name</label><input x-model="$store.crm.editFields.first_name"></div>
+            <div><label class="field-label">Last Name</label><input x-model="$store.crm.editFields.last_name"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">Phone</label><input x-model="$store.crm.editFields.phone"></div>
+            <div><label class="field-label">Email</label><input x-model="$store.crm.editFields.email"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div>
+                <label class="field-label">Event Type</label>
+                <select x-model="$store.crm.editFields.event_type">
+                    <option value="">Select...</option>
+                    <option value="wedding">Wedding</option>
+                    <option value="corporate">Corporate</option>
+                    <option value="construction">Construction</option>
+                    <option value="festival">Festival</option>
+                    <option value="private_party">Private Party</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div><label class="field-label">Event Date</label><input type="date" x-model="$store.crm.editFields.event_date"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">City</label><input x-model="$store.crm.editFields.event_city"></div>
+            <div><label class="field-label">Address</label><input x-model="$store.crm.editFields.event_address"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">Guest Count</label><input type="number" x-model="$store.crm.editFields.guest_count"></div>
+            <div><label class="field-label">Start Time</label><input x-model="$store.crm.editFields.event_start_time" placeholder="10:00 AM"></div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">End Time</label><input x-model="$store.crm.editFields.event_end_time" placeholder="4:00 PM"></div>
+            <div>
+                <label class="field-label">Deposit Status</label>
+                <select x-model="$store.crm.editFields.deposit_status">
+                    <option value="none">None</option>
+                    <option value="sent">Sent</option>
+                    <option value="paid">Paid</option>
+                    <option value="refunded">Refunded</option>
+                </select>
+            </div>
+        </div>
+        <div class="grid-2 mb-3">
+            <div><label class="field-label">Quote Amount ($)</label><input type="number" x-model="$store.crm.editFields.total_quote_amount"></div>
+            <div><label class="field-label">Deposit Amount ($)</label><input type="number" x-model="$store.crm.editFields.deposit_amount"></div>
+        </div>
+        <div class="mb-3"><label class="field-label">Terrain Notes</label><input x-model="$store.crm.editFields.terrain_notes" placeholder="Grass, gravel, etc."></div>
+        <div class="mb-3"><label class="field-label">Power/Water Notes</label><input x-model="$store.crm.editFields.power_water_notes" placeholder="Access to water hookup?"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" @click="$store.crm.modal = ''">Cancel</button>
+            <button class="btn btn-primary" @click="$store.crm.saveEdit()">Save Changes</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- Enroll in Follow-Up -->
+<template x-if="$store.crm.modal === 'enrollFollowUp' && $store.crm.selectedLead">
+<div class="modal-bg" @click.self="$store.crm.modal = ''">
+    <div class="modal-box">
+        <h2>Start Follow-Up Sequence</h2>
+        <p class="text-xs text-dim mb-4">Choose a sequence type for <strong x-text="$store.crm.leadName($store.crm.selectedLead)"></strong></p>
+        <div style="display:flex;flex-direction:column;gap:8px;" class="mb-3">
+            <button class="btn btn-secondary w-full" @click="$store.crm.enrollFollowUp($store.crm.selectedLead.id, 'default'); $store.crm.modal = '';">
+                <div class="text-sm font-bold">Default (4 steps)</div>
+                <div class="text-xs text-dim">Day 1 → Day 3 → Day 5 → Day 7</div>
+            </button>
+            <button class="btn btn-secondary w-full" @click="$store.crm.enrollFollowUp($store.crm.selectedLead.id, 'hot_lead'); $store.crm.modal = '';">
+                <div class="text-sm font-bold">Hot Lead (5 steps)</div>
+                <div class="text-xs text-dim">2h → 12h → 2d → 4d → 6d — aggressive</div>
+            </button>
+            <button class="btn btn-secondary w-full" @click="$store.crm.enrollFollowUp($store.crm.selectedLead.id, 'facebook'); $store.crm.modal = '';">
+                <div class="text-sm font-bold">Facebook (4 steps)</div>
+                <div class="text-xs text-dim">4h → 24h → 3d → 6d</div>
+            </button>
+            <button class="btn btn-secondary w-full" @click="$store.crm.enrollFollowUp($store.crm.selectedLead.id, 'website'); $store.crm.modal = '';">
+                <div class="text-sm font-bold">Website (4 steps)</div>
+                <div class="text-xs text-dim">2h → 2d → 4d → 7d</div>
+            </button>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" @click="$store.crm.modal = ''">Cancel</button>
+        </div>
+    </div>
+</div>
+</template>
+
+<!-- Toast -->
+<template x-if="$store.crm.toast">
+    <div class="toast-wrap">
+        <div class="toast-msg" :class="$store.crm.toast.type === 'error' ? 'toast-error' : 'toast-success'" x-text="$store.crm.toast.msg"></div>
+    </div>
+</template>
+
+<style>[x-cloak] { display: none !important; }</style>
+</body>
+</html>

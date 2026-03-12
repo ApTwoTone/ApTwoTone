@@ -1,0 +1,72 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-convex:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Check Convex deploy key
+        id: check-convex
+        env:
+          HAS_KEY: ${{ secrets.CONVEX_DEPLOY_KEY != '' }}
+        run: echo "available=$HAS_KEY" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy Convex
+        if: steps.check-convex.outputs.available == 'true'
+        run: npx convex deploy
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+
+      - name: Skip Convex deploy
+        if: steps.check-convex.outputs.available != 'true'
+        run: echo "::warning::CONVEX_DEPLOY_KEY is not set — skipping Convex deployment"
+
+  deploy-cloudflare:
+    runs-on: ubuntu-latest
+    needs: deploy-convex
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Check Cloudflare token
+        id: check-cf
+        env:
+          HAS_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        run: echo "available=$HAS_TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Build for Cloudflare
+        if: steps.check-cf.outputs.available == 'true'
+        run: npx @opennextjs/cloudflare
+        env:
+          NEXT_PUBLIC_CONVEX_URL: ${{ secrets.NEXT_PUBLIC_CONVEX_URL }}
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.check-cf.outputs.available == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: pages deploy .open-next/assets --project-name=zoar-website
+
+      - name: Skip Cloudflare deploy
+        if: steps.check-cf.outputs.available != 'true'
+        run: echo "::warning::CLOUDFLARE_API_TOKEN is not set — skipping Cloudflare deployment"
