@@ -18,7 +18,7 @@ CONFIG_PATH = Path.home() / ".nexus" / "config.json"
 @dataclass(frozen=True)
 class SendWindow:
     start_hour: int = 8
-    end_hour: int = 17
+    end_hour: int = 19
     timezone: str = "America/Los_Angeles"
 
     def as_dict(self) -> Dict[str, object]:

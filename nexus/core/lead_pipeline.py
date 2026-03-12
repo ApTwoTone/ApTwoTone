@@ -704,6 +704,17 @@ class LeadPipeline:
             except Exception as e:
                 print(f"[Pipeline] ⚠️ Auto-quote generation failed for lead {lead_id}: {e}")
 
+        # Enroll in follow-up sequence to collect event details if missing
+        if sent_any and not (lead.get("event_type") or lead.get("event_city") or lead.get("event_date")):
+            try:
+                from core.follow_up_engine import get_follow_up_engine
+                engine = get_follow_up_engine()
+                if engine:
+                    engine.enroll_lead(lead_id, "new_lead")
+                    print(f"[Pipeline] Enrolled lead {lead_id} in new_lead follow-up (no event details)")
+            except Exception as e:
+                print(f"[Pipeline] Follow-up enrollment failed for lead {lead_id}: {e}")
+
         # Informational Telegram notification (no approval buttons needed)
         await self._notify(
             f"NEW LEAD — Auto-contacted\n"

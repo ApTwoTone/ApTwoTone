@@ -292,3 +292,23 @@ def test_stage_counts_query(tmp_path):
     assert counts["new_lead"] == 2
     assert counts["auto_contacted"] == 1
     assert counts["booked"] == 0
+
+
+# ---------------------------------------------------------------------------
+# 6. Send window extension (Phase 3)
+# ---------------------------------------------------------------------------
+
+def test_send_window_default_end_hour_is_19():
+    """Send window default end hour should be 7pm (19), not 5pm (17)."""
+    from core.send_window import SendWindow
+    win = SendWindow()
+    assert win.end_hour == 19, f"Expected end_hour=19 (7pm), got {win.end_hour}"
+    assert win.start_hour == 8
+
+
+def test_send_window_7pm_is_in_window():
+    """6:30pm PT should be within the 8am-7pm send window."""
+    from core.send_window import SendWindow
+    win = SendWindow()  # 8-19
+    hour = 18  # 6:30pm
+    assert win.start_hour <= hour < win.end_hour
