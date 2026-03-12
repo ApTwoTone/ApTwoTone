@@ -1319,6 +1319,29 @@ def _migrate_039_lead_booking_link(conn):
     _add_column(conn, "leads", "booking_id", "INTEGER", None)
 
 
+def _migrate_040_channel_locking(conn):
+    """Add preferred_channel and last_reply_channel to leads for channel locking.
+    Once a lead replies on a channel (SMS, email, facebook_dm, instagram_dm),
+    all follow-ups route through that same channel."""
+    _add_column(conn, "leads", "preferred_channel", "TEXT", "")
+    _add_column(conn, "leads", "last_reply_channel", "TEXT", "")
+
+
+def _migrate_041_vendor_contact_enrichment(conn):
+    """Add enrichment confidence columns to vendors for smart name resolution.
+    Prevents sending 'Hey Chris' when the actual owner is Sarah."""
+    # Only run if vendors table exists (it's created in migration 010)
+    has_vendors = conn.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='vendors'"
+    ).fetchone()
+    if not has_vendors:
+        return
+    _add_column(conn, "vendors", "contact_name_source", "TEXT", "")
+    _add_column(conn, "vendors", "contact_name_confidence", "TEXT", "low")
+    _add_column(conn, "vendors", "contact_name_verified", "INTEGER", 0)
+    _add_column(conn, "vendors", "business_owner_name", "TEXT", "")
+
+
 MIGRATIONS = [
     (1, "Add CRM columns to leads", _migrate_001_crm_columns),
     (2, "Add actor/metadata to lead_events", _migrate_002_event_metadata),
@@ -1359,6 +1382,8 @@ MIGRATIONS = [
     (37, "Add task_type and complexity to task_board", _migrate_037_task_board_extensions),
     (38, "Add requires_manual_approval column + backfill for ad/form leads", _migrate_038_requires_manual_approval_column),
     (39, "Add booking_id column to leads for lead-to-booking linkage", _migrate_039_lead_booking_link),
+    (40, "Add preferred_channel + last_reply_channel to leads for channel locking", _migrate_040_channel_locking),
+    (41, "Add vendor contact enrichment columns for smart name resolution", _migrate_041_vendor_contact_enrichment),
 ]
 
 

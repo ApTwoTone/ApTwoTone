@@ -885,7 +885,12 @@ class LeadPipeline:
             if m.get("direction") == "inbound" and not last_in:
                 last_in = m.get("content", "")[:200]
 
-        channel = "sms" if lead.get("phone") else "email"
+        # Route to the channel the lead last replied on (channel locking)
+        preferred = lead.get("preferred_channel", "").strip()
+        if preferred in ("sms", "email", "facebook_dm", "instagram_dm"):
+            channel = preferred
+        else:
+            channel = "sms" if lead.get("phone") else "email"
         aid = queue_message(
             lead_id=lead_id, lead_name=name,
             lead_phone=lead.get("phone", ""), lead_email=lead.get("email", ""),
@@ -979,14 +984,17 @@ class LeadPipeline:
         # Save inbound message
         self._log_message(lead_id, "inbound", channel, "received", message)
 
-        # Update lead
+        # Update lead + lock to the channel they replied on
         conn = sqlite3.connect(str(DB_PATH))
         conn.execute(
-            "UPDATE leads SET status='replied', booking_status='qualifying', last_reply_at=?, next_action_at='', updated_at=? WHERE id=?",
-            (_now(), _now(), lead_id)
+            "UPDATE leads SET status='replied', booking_status='qualifying', "
+            "last_reply_at=?, last_reply_channel=?, preferred_channel=?, "
+            "next_action_at='', updated_at=? WHERE id=?",
+            (_now(), channel, channel, _now(), lead_id)
         )
         conn.commit()
         conn.close()
+        print(f"[Pipeline] Channel locked to '{channel}' for lead {lead_id} ({name})")
 
         # Stop follow-up sequence (lead replied — no more auto-messages)
         try:
