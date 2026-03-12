@@ -312,3 +312,75 @@ def test_send_window_7pm_is_in_window():
     win = SendWindow()  # 8-19
     hour = 18  # 6:30pm
     assert win.start_hour <= hour < win.end_hour
+
+
+# ---------------------------------------------------------------------------
+# 7. Channel locking (Phase 4)
+# ---------------------------------------------------------------------------
+
+def test_migration_040_adds_channel_columns(tmp_path):
+    """Migration 040 should add preferred_channel and last_reply_channel."""
+    db_path = tmp_path / "migrate040_test.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT DEFAULT '',
+            source TEXT DEFAULT '',
+            booking_status TEXT DEFAULT 'new_lead'
+        );
+        CREATE TABLE IF NOT EXISTS schema_migrations (
+            version INTEGER PRIMARY KEY,
+            applied_at TEXT DEFAULT (datetime('now')),
+            description TEXT DEFAULT ''
+        );
+    """)
+    for v in range(1, 40):
+        conn.execute("INSERT INTO schema_migrations (version, description) VALUES (?, ?)",
+                     (v, f"pre-applied {v}"))
+    conn.commit()
+    conn.close()
+
+    run_migrations(db_path=db_path)
+
+    conn = sqlite3.connect(str(db_path))
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(leads)").fetchall()]
+    conn.close()
+    assert "preferred_channel" in cols
+    assert "last_reply_channel" in cols
+
+
+# ---------------------------------------------------------------------------
+# 8. Contact enrichment (Phase 4)
+# ---------------------------------------------------------------------------
+
+def test_extract_name_from_email_firstname_lastname():
+    """Should extract first.last from email patterns."""
+    from core.contact_enrichment import extract_name_from_email
+    result = extract_name_from_email("sarah.jones@example.com")
+    assert result["first_name"] == "Sarah"
+    assert result["last_name"] == "Jones"
+    assert result["confidence"] == "medium"
+
+
+def test_extract_name_from_generic_email():
+    """Generic emails like info@ should return no name."""
+    from core.contact_enrichment import extract_name_from_email
+    result = extract_name_from_email("info@somebusiness.com")
+    assert result["confidence"] == "none"
+    assert result["first_name"] == ""
+
+
+def test_extract_name_from_business_email():
+    """Business prefix emails should not guess a name."""
+    from core.contact_enrichment import extract_name_from_email
+    result = extract_name_from_email("bookings@venuename.com")
+    assert result["confidence"] == "none"
+
+
+def test_extract_name_single_word_low_confidence():
+    """Single name prefix should be low confidence."""
+    from core.contact_enrichment import extract_name_from_email
+    result = extract_name_from_email("chris@business.com")
+    assert result["confidence"] == "low"
+    assert result["first_name"] == "Chris"
