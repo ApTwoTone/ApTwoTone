@@ -4994,11 +4994,12 @@ async def crm_create_lead(request: Request):
     body = await request.json()
     lead = svc.create_lead(body)
     deduped = lead.pop("_deduplicated", False)
-    if not lead.get("_deduplicated"):
+    if not deduped:
         try:
-            from core.lead_pipeline import LeadPipeline
-            pipeline = LeadPipeline()
-            await pipeline.process_new_lead(lead["id"])
+            from core.lead_pipeline import get_pipeline
+            pipeline = get_pipeline()
+            if pipeline:
+                await pipeline.process_new_lead(lead["id"])
         except Exception as e:
             print(f"[Pipeline] trigger error for lead {lead.get('id')}: {e}")
     return JSONResponse({"ok": True, "lead": lead, "deduplicated": deduped})
@@ -13246,9 +13247,10 @@ async def webhook_n8n_lead(request: Request):
 
         # Start lead pipeline (replaces direct follow-up)
         try:
-            from core.lead_pipeline import LeadPipeline
-            pipeline = LeadPipeline()
-            await pipeline.process_new_lead(lead_id)
+            from core.lead_pipeline import get_pipeline
+            pipeline = get_pipeline()
+            if pipeline:
+                await pipeline.process_new_lead(lead_id)
         except Exception as e:
             print(f"[Pipeline] n8n lead trigger error: {e}")
 

@@ -654,18 +654,32 @@ class FollowUpEngine:
             conn.close()
 
     def on_approval_completed(self, approval_id: int) -> dict:
-        """Called when Kai approves a follow-up message. Advances the sequence."""
+        """Called when Kai approves a follow-up message. Advances the sequence.
+
+        Uses lead_id from message_approvals to find the active follow-up sequence,
+        since message_approvals has no sequence_id column.
+        """
         try:
             conn = sqlite3.connect(str(self.db_path))
             conn.row_factory = sqlite3.Row
-            row = conn.execute(
-                "SELECT lead_id, sequence_id FROM message_approvals WHERE id=?",
+            approval = conn.execute(
+                "SELECT lead_id FROM message_approvals WHERE id=?",
                 (approval_id,)
             ).fetchone()
+            if not approval:
+                conn.close()
+                return {"ok": False, "error": f"Approval {approval_id} not found"}
+            lead_id = approval["lead_id"]
+            # Find active sequence for this lead
+            seq = conn.execute(
+                "SELECT id FROM follow_up_sequences "
+                "WHERE lead_id=? AND status='active' ORDER BY id DESC LIMIT 1",
+                (lead_id,)
+            ).fetchone()
             conn.close()
-            if row and row["sequence_id"]:
-                return self.advance_step(row["sequence_id"])
-            return {"ok": False, "error": "No sequence found for approval"}
+            if seq:
+                return self.advance_step(seq["id"])
+            return {"ok": False, "error": f"No active sequence for lead {lead_id}"}
         except Exception as e:
             return {"ok": False, "error": str(e)}
 

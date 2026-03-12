@@ -431,13 +431,14 @@ def _auto_create_lead(ig_user_id: str, name: str, message: str) -> int | None:
         conn.commit(); conn.close()
         try:
             import asyncio
-            from core.lead_pipeline import LeadPipeline
-            pipeline = LeadPipeline()
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.ensure_future(pipeline.process_new_lead(lead_id))
-            else:
-                loop.run_until_complete(pipeline.process_new_lead(lead_id))
+            from core.lead_pipeline import get_pipeline
+            pipeline = get_pipeline()
+            if pipeline:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.ensure_future(pipeline.process_new_lead(lead_id))
+                else:
+                    loop.run_until_complete(pipeline.process_new_lead(lead_id))
         except Exception as e:
             print(f"[Pipeline] Failed to trigger pipeline for lead {lead_id}: {e}")
         return lead_id

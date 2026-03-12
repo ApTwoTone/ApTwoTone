@@ -1128,6 +1128,18 @@ class LeadPipeline:
         for row in new_leads:
             await self._queue_initial_for_approval(row["id"])
 
+        # 1b. Resume deferred leads whose next_action_at has passed
+        deferred = conn.execute(
+            "SELECT id FROM leads WHERE status = 'deferred' "
+            "AND next_action_at != '' AND next_action_at <= ?", (now,)
+        ).fetchall()
+        for row in deferred:
+            lead = self.get_lead(row["id"])
+            if lead and lead.get("requires_manual_approval", 1) == 0:
+                await self._auto_send_initial(row["id"])
+            else:
+                await self._queue_initial_for_approval(row["id"])
+
         # 2. Process due follow-ups → queue for approval (not auto-send)
         due = conn.execute(
             "SELECT id, status, follow_up_count, phone FROM leads "
