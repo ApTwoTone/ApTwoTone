@@ -235,6 +235,16 @@ async def initiate_booking(
     _log_timeline(booking_id, "created",
                   f"Booking initiated for {name} — {_format_date(event_date)} at {location}, {_format_price(price)}")
 
+    # Link booking_id back to lead
+    if lead_id:
+        try:
+            conn = _conn()
+            conn.execute("UPDATE leads SET booking_id=?, updated_at=datetime('now') WHERE id=?", (booking_id, lead_id))
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"[Booking] Link booking_id to lead error: {e}")
+
     # Update lead status to reflect booking
     try:
         conn = _conn()

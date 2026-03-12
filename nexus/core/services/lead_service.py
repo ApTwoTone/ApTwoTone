@@ -158,7 +158,7 @@ class LeadService:
         # New leads from trusted ad/form sources get auto-contacted (Rule #0 safe).
         # Pre-existing contacts and unknown sources require Kai's Telegram approval.
         _auto_sources = {
-            "facebook_ad", "facebook_lead_ad", "website", "website_form",
+            "facebook", "facebook_ad", "facebook_lead_ad", "website", "website_form",
         }
         source_val = (data.get("source", "") or "").lower()
         requires_approval = 0 if source_val in _auto_sources else 1
@@ -199,7 +199,29 @@ class LeadService:
                 f"Lead created: {full} ({phone or email})", "system",
                 {"source": data.get("source", "manual")})
 
-        return self.get_lead(lead_id)
+        result = self.get_lead(lead_id)
+
+        # Sync to Convex dashboard
+        try:
+            from integrations.convex_sync import sync_lead
+            sync_lead({
+                "first_name": data.get("first_name", ""),
+                "last_name": data.get("last_name", ""),
+                "email": data.get("email", ""),
+                "phone": data.get("phone", ""),
+                "source": data.get("source", ""),
+                "event_type": data.get("event_type", ""),
+                "event_date": data.get("event_date", ""),
+                "event_city": data.get("event_city", ""),
+                "guest_count": data.get("guest_count", ""),
+                "requires_manual_approval": requires_approval,
+                "preferred_channel": "",
+                "booking_id": "",
+            })
+        except Exception:
+            pass  # Convex sync is non-critical
+
+        return result
 
     def get_lead(self, lead_id: int) -> dict | None:
         conn = self._conn()
@@ -328,6 +350,7 @@ class LeadService:
         if phone and len(phone) == 10:
             rows = conn.execute(
                 "SELECT * FROM leads WHERE phone != '' AND phone IS NOT NULL"
+                " AND booking_status NOT IN ('opted_out', 'closed', 'lost')"
             ).fetchall()
             for row in rows:
                 if _clean_phone(row["phone"]) != phone:
@@ -338,7 +361,11 @@ class LeadService:
                 seen_ids.add(rid)
                 candidates.append(dict(row))
         if email:
-            rows = conn.execute("SELECT * FROM leads WHERE LOWER(email) = ?", (email.lower(),)).fetchall()
+            rows = conn.execute(
+                "SELECT * FROM leads WHERE LOWER(email) = ?"
+                " AND booking_status NOT IN ('opted_out', 'closed', 'lost')",
+                (email.lower(),)
+            ).fetchall()
             for row in rows:
                 rid = int(row["id"])
                 if rid in seen_ids:

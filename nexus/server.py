@@ -4994,6 +4994,13 @@ async def crm_create_lead(request: Request):
     body = await request.json()
     lead = svc.create_lead(body)
     deduped = lead.pop("_deduplicated", False)
+    if not lead.get("_deduplicated"):
+        try:
+            from core.lead_pipeline import LeadPipeline
+            pipeline = LeadPipeline()
+            await pipeline.process_new_lead(lead["id"])
+        except Exception as e:
+            print(f"[Pipeline] trigger error for lead {lead.get('id')}: {e}")
     return JSONResponse({"ok": True, "lead": lead, "deduplicated": deduped})
 
 @app.put("/api/crm/leads/{lead_id}")
@@ -13237,12 +13244,13 @@ async def webhook_n8n_lead(request: Request):
         except Exception as e:
             print(f"[n8n] Lead scoring error: {e}")
 
-        # Start follow-up sequence
+        # Start lead pipeline (replaces direct follow-up)
         try:
-            from core.follow_up_engine import FollowUpEngine
-            FollowUpEngine().start_sequence(lead_id, "new_lead")
+            from core.lead_pipeline import LeadPipeline
+            pipeline = LeadPipeline()
+            await pipeline.process_new_lead(lead_id)
         except Exception as e:
-            print(f"[n8n] Follow-up sequence error: {e}")
+            print(f"[Pipeline] n8n lead trigger error: {e}")
 
         # Notify Slack
         try:

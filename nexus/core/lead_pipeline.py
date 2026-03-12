@@ -521,7 +521,7 @@ class LeadPipeline:
             next_str = next_morning.strftime("%Y-%m-%d %H:%M:%S")
             conn = sqlite3.connect(str(DB_PATH))
             conn.execute(
-                "UPDATE leads SET next_action_at=?, status='new', updated_at=? WHERE id=?",
+                "UPDATE leads SET next_action_at=?, status='deferred', updated_at=? WHERE id=?",
                 (next_str, _now(), lead_id)
             )
             conn.commit()
@@ -661,7 +661,7 @@ class LeadPipeline:
 
         # Auto-generate quote if lead has event details
         quote_info = ""
-        if sent_any and (lead.get("event_type") or lead.get("event_city") or lead.get("event_date")):
+        if sent_any and lead.get("event_city"):
             try:
                 from core.quote_generator import create_quote
                 from core.pricing import calculate_quote as _calc_quote
@@ -710,7 +710,7 @@ class LeadPipeline:
                 from core.follow_up_engine import get_follow_up_engine
                 engine = get_follow_up_engine()
                 if engine:
-                    engine.enroll_lead(lead_id, "new_lead")
+                    engine.start_sequence(lead_id, "new_lead")
                     print(f"[Pipeline] Enrolled lead {lead_id} in new_lead follow-up (no event details)")
             except Exception as e:
                 print(f"[Pipeline] Follow-up enrollment failed for lead {lead_id}: {e}")
@@ -988,7 +988,7 @@ class LeadPipeline:
         conn = sqlite3.connect(str(DB_PATH))
         conn.execute(
             "UPDATE leads SET status='replied', booking_status='qualifying', "
-            "last_reply_at=?, last_reply_channel=?, preferred_channel=?, "
+            "last_reply_at=?, last_reply_channel=?, preferred_channel=COALESCE(NULLIF(preferred_channel, ''), ?), "
             "next_action_at='', updated_at=? WHERE id=?",
             (_now(), channel, channel, _now(), lead_id)
         )
@@ -1001,7 +1001,7 @@ class LeadPipeline:
             from core.follow_up_engine import get_follow_up_engine
             engine = get_follow_up_engine()
             if engine:
-                engine.stop_sequence(lead_id, "lead_replied")
+                engine.cancel_sequence(lead_id, "lead_replied")
         except Exception:
             pass
 
@@ -1089,7 +1089,7 @@ class LeadPipeline:
             from core.follow_up_engine import get_follow_up_engine
             engine = get_follow_up_engine()
             if engine:
-                engine.stop_sequence(lead_id, "opted_out")
+                engine.cancel_sequence(lead_id, "opted_out")
         except Exception:
             pass
         self._log_event(lead_id, "opted_out", "")

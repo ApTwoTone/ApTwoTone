@@ -384,3 +384,120 @@ def test_extract_name_single_word_low_confidence():
     result = extract_name_from_email("chris@business.com")
     assert result["confidence"] == "low"
     assert result["first_name"] == "Chris"
+
+
+# ---------------------------------------------------------------------------
+# 9. Audit fix verification tests
+# ---------------------------------------------------------------------------
+
+def test_facebook_source_gets_auto_approval(tmp_path):
+    """Source 'facebook' (not just 'facebook_ad') should get auto-approval."""
+    from core.services.lead_service import LeadService
+    # LeadService INSERT uses ad_id, utm_* columns — need the full DDL from test_intake_pipeline
+    FULL_DDL = """
+    CREATE TABLE IF NOT EXISTS leads (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        lead_uuid TEXT DEFAULT '', ghl_contact_id TEXT UNIQUE DEFAULT '',
+        first_name TEXT DEFAULT '', last_name TEXT DEFAULT '', full_name TEXT DEFAULT '',
+        email TEXT DEFAULT '', phone TEXT DEFAULT '', carrier TEXT DEFAULT 'tmobile',
+        source TEXT DEFAULT '', date_added TEXT DEFAULT '',
+        discovered_at TEXT DEFAULT (datetime('now')),
+        booking_status TEXT DEFAULT 'new_lead', status TEXT DEFAULT 'new',
+        requires_manual_approval INTEGER DEFAULT 1,
+        last_contacted_at TEXT DEFAULT '', last_reply_at TEXT DEFAULT '',
+        follow_up_count INTEGER DEFAULT 0, next_action_at TEXT DEFAULT '',
+        sms_method TEXT DEFAULT 'google_voice',
+        initial_sms_sent INTEGER DEFAULT 0, initial_email_sent INTEGER DEFAULT 0,
+        notes TEXT DEFAULT '', internal_notes TEXT DEFAULT '[]',
+        updated_at TEXT DEFAULT (datetime('now')),
+        ad_id TEXT DEFAULT '', ad_set_id TEXT DEFAULT '', campaign_id TEXT DEFAULT '',
+        utm_source TEXT DEFAULT '', utm_medium TEXT DEFAULT '',
+        utm_campaign TEXT DEFAULT '', utm_content TEXT DEFAULT '', utm_term TEXT DEFAULT '',
+        form_id TEXT DEFAULT '', form_name TEXT DEFAULT '',
+        event_date TEXT DEFAULT '', event_start_time TEXT DEFAULT '',
+        event_end_time TEXT DEFAULT '', event_city TEXT DEFAULT '',
+        event_address TEXT DEFAULT '', guest_count INTEGER DEFAULT 0,
+        event_type TEXT DEFAULT '', terrain_notes TEXT DEFAULT '',
+        power_water_notes TEXT DEFAULT ''
+    )"""
+    db_path = tmp_path / "fb_source_test.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.executescript(FULL_DDL)
+    conn.close()
+    svc = LeadService(db_path=db_path)
+    lead = svc.create_lead({
+        "first_name": "Test", "last_name": "User",
+        "phone": "8185551111", "source": "facebook",
+    })
+    assert lead["requires_manual_approval"] == 0, \
+        "source='facebook' should get auto-approval (requires_manual_approval=0)"
+
+
+def test_migration_039_booking_id_is_text(tmp_path):
+    """Migration 039 should create booking_id as TEXT, not INTEGER."""
+    db_path = tmp_path / "migrate039_type_test.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT DEFAULT '',
+            source TEXT DEFAULT '',
+            booking_status TEXT DEFAULT 'new_lead'
+        );
+        CREATE TABLE IF NOT EXISTS schema_migrations (
+            version INTEGER PRIMARY KEY,
+            applied_at TEXT DEFAULT (datetime('now')),
+            description TEXT DEFAULT ''
+        );
+    """)
+    for v in range(1, 39):
+        conn.execute("INSERT INTO schema_migrations (version, description) VALUES (?, ?)",
+                     (v, f"pre-applied {v}"))
+    conn.commit()
+    conn.close()
+
+    run_migrations(db_path=db_path)
+
+    conn = sqlite3.connect(str(db_path))
+    cols = {r[1]: r[2] for r in conn.execute("PRAGMA table_info(leads)").fetchall()}
+    conn.close()
+    assert "booking_id" in cols
+    assert cols["booking_id"] == "TEXT", f"booking_id should be TEXT, got {cols['booking_id']}"
+
+
+def test_migration_041_adds_contact_name(tmp_path):
+    """Migration 041 should add contact_name column to vendors table."""
+    db_path = tmp_path / "migrate041_test.db"
+    conn = sqlite3.connect(str(db_path))
+    conn.executescript("""
+        CREATE TABLE IF NOT EXISTS leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            first_name TEXT DEFAULT ''
+        );
+        CREATE TABLE IF NOT EXISTS vendors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT DEFAULT '',
+            email TEXT DEFAULT ''
+        );
+        CREATE TABLE IF NOT EXISTS schema_migrations (
+            version INTEGER PRIMARY KEY,
+            applied_at TEXT DEFAULT (datetime('now')),
+            description TEXT DEFAULT ''
+        );
+    """)
+    for v in range(1, 41):
+        conn.execute("INSERT INTO schema_migrations (version, description) VALUES (?, ?)",
+                     (v, f"pre-applied {v}"))
+    conn.commit()
+    conn.close()
+
+    run_migrations(db_path=db_path)
+
+    conn = sqlite3.connect(str(db_path))
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(vendors)").fetchall()]
+    conn.close()
+    assert "contact_name" in cols, "Migration 041 should add contact_name column"
+    assert "contact_name_source" in cols
+    assert "contact_name_confidence" in cols
+    assert "contact_name_verified" in cols
+    assert "business_owner_name" in cols

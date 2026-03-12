@@ -453,6 +453,12 @@ class FollowUpEngine:
             except Exception:
                 pass
 
+            # Respect lead's preferred channel
+            preferred = lead.get("preferred_channel", "").strip() if lead else ""
+            channel = msg_data["channel"]
+            if preferred in ("sms", "email", "facebook_dm", "instagram_dm"):
+                channel = preferred
+
             # Insert into message_approvals
             from core.approval_queue import queue_message
 
@@ -462,7 +468,7 @@ class FollowUpEngine:
                 lead_phone=ld.get("phone", ""),
                 lead_email=ld.get("email", ""),
                 lead_source=ld.get("source", ""),
-                channel=msg_data["channel"],
+                channel=channel,
                 message_type="followup",
                 proposed_message=msg_data["message"],
                 proposed_subject="",
@@ -483,7 +489,7 @@ class FollowUpEngine:
                 "message_preview": msg_data["message"][:120],
                 "step": msg_data["template_step"],
                 "sequence_type": msg_data["sequence_type"],
-                "channel": msg_data["channel"],
+                "channel": channel,
             }
 
         except Exception as e:
@@ -646,6 +652,22 @@ class FollowUpEngine:
             return {"ok": False, "error": str(e)}
         finally:
             conn.close()
+
+    def on_approval_completed(self, approval_id: int) -> dict:
+        """Called when Kai approves a follow-up message. Advances the sequence."""
+        try:
+            conn = sqlite3.connect(str(self.db_path))
+            conn.row_factory = sqlite3.Row
+            row = conn.execute(
+                "SELECT lead_id, sequence_id FROM message_approvals WHERE id=?",
+                (approval_id,)
+            ).fetchone()
+            conn.close()
+            if row and row["sequence_id"]:
+                return self.advance_step(row["sequence_id"])
+            return {"ok": False, "error": "No sequence found for approval"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
 
     def get_sequence_status(self, lead_id: int) -> dict:
         """Get the current follow-up sequence status for a lead.

@@ -1316,7 +1316,7 @@ def _migrate_038_requires_manual_approval_column(conn):
 
 def _migrate_039_lead_booking_link(conn):
     """Add booking_id column to leads table for lead → booking linkage."""
-    _add_column(conn, "leads", "booking_id", "INTEGER", None)
+    _add_column(conn, "leads", "booking_id", "TEXT", "")
 
 
 def _migrate_040_channel_locking(conn):
@@ -1336,6 +1336,7 @@ def _migrate_041_vendor_contact_enrichment(conn):
     ).fetchone()
     if not has_vendors:
         return
+    _add_column(conn, "vendors", "contact_name", "TEXT", "")
     _add_column(conn, "vendors", "contact_name_source", "TEXT", "")
     _add_column(conn, "vendors", "contact_name_confidence", "TEXT", "low")
     _add_column(conn, "vendors", "contact_name_verified", "INTEGER", 0)
