@@ -1314,6 +1314,11 @@ def _migrate_038_requires_manual_approval_column(conn):
     )
 
 
+def _migrate_039_lead_booking_link(conn):
+    """Add booking_id column to leads table for lead → booking linkage."""
+    _add_column(conn, "leads", "booking_id", "INTEGER", None)
+
+
 MIGRATIONS = [
     (1, "Add CRM columns to leads", _migrate_001_crm_columns),
     (2, "Add actor/metadata to lead_events", _migrate_002_event_metadata),
@@ -1353,6 +1358,7 @@ MIGRATIONS = [
     (36, "Shared task board for cross-agent goals", _migrate_036_task_board),
     (37, "Add task_type and complexity to task_board", _migrate_037_task_board_extensions),
     (38, "Add requires_manual_approval column + backfill for ad/form leads", _migrate_038_requires_manual_approval_column),
+    (39, "Add booking_id column to leads for lead-to-booking linkage", _migrate_039_lead_booking_link),
 ]
 
 

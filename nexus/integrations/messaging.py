@@ -241,7 +241,14 @@ class Messenger:
     def __init__(self, gmail: str, app_password: str):
         self.gmail = gmail
         self.app_password = app_password
-        self.test_mode = True
+        # Load test_mode from config (default True for safety)
+        try:
+            import json as _json
+            _cfg_path = Path.home() / ".nexus" / "config.json"
+            _cfg = _json.loads(_cfg_path.read_text()) if _cfg_path.exists() else {}
+            self.test_mode = _cfg.get("messaging_test_mode", True)
+        except Exception:
+            self.test_mode = True
         self.test_phones: set = set()
         self.test_emails: set = set()
         self._init_db()

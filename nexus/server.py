@@ -5403,11 +5403,13 @@ async def crm_website_webhook(request: Request):
         try:
             from integrations.convex_sync import sync_lead
             sync_lead({
-                "first_name": first_name, "last_name": last_name,
-                "email": email, "phone": phone, "source": source,
-                "event_type": event_type, "event_date": event_date,
-                "event_city": event_city, "guest_count": guest_count,
-                "notes": notes,
+                "first_name": first, "last_name": last,
+                "email": email_addr, "phone": clean_phone, "source": source,
+                "event_type": body.get("event_type", ""),
+                "event_date": body.get("event_date", ""),
+                "event_city": body.get("event_city", ""),
+                "guest_count": body.get("guests", ""),
+                "notes": body.get("notes", ""),
             })
         except Exception as e:
             print(f"[ConvexSync] Lead sync error: {e}")

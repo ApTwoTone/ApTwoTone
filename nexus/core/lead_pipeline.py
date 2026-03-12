@@ -505,8 +505,32 @@ class LeadPipeline:
         then sends immediately. All 10 security gates still run (blocklist,
         DLP, rate limits, etc.) — only the manual Telegram approval wait is skipped.
         Kai gets an informational Telegram notification (no buttons needed).
+
+        Respects send window (8am-5pm PT). If outside window, defers to next morning.
         """
         from integrations.messaging import _check_blocklist
+        from core.send_window import now_in_window
+
+        # Quiet hours gate: defer if outside send window
+        in_window, now_local, win = now_in_window()
+        if not in_window:
+            from datetime import timedelta
+            next_morning = now_local.replace(hour=win.start_hour, minute=0, second=0, microsecond=0)
+            if next_morning <= now_local:
+                next_morning += timedelta(days=1)
+            next_str = next_morning.strftime("%Y-%m-%d %H:%M:%S")
+            conn = sqlite3.connect(str(DB_PATH))
+            conn.execute(
+                "UPDATE leads SET next_action_at=?, status='new', updated_at=? WHERE id=?",
+                (next_str, _now(), lead_id)
+            )
+            conn.commit()
+            conn.close()
+            self._log_event(lead_id, "deferred_quiet_hours",
+                            f"Outside send window ({win.start_hour}:00-{win.end_hour}:00 {win.timezone}). "
+                            f"Deferred to {next_str}")
+            print(f"[Pipeline] Deferred lead {lead_id} to {next_str} (outside send window)")
+            return
 
         lead = self.get_lead(lead_id)
         if not lead:
@@ -626,6 +650,60 @@ class LeadPipeline:
 
         self._log_event(lead_id, "auto_sent_initial", f"Auto-sent initial outreach to {name}")
 
+        # Advance CRM pipeline stage
+        try:
+            from core.services.pipeline_service import PipelineService
+            ps = PipelineService()
+            if sent_any:
+                ps.auto_transition_on_action(lead_id, "initial_contact")
+        except Exception as e:
+            print(f"[Pipeline] ⚠️ Pipeline transition error: {e}")
+
+        # Auto-generate quote if lead has event details
+        quote_info = ""
+        if sent_any and (lead.get("event_type") or lead.get("event_city") or lead.get("event_date")):
+            try:
+                from core.quote_generator import create_quote
+                from core.pricing import calculate_quote as _calc_quote
+                event_city = lead.get("event_city") or ""
+                price = 999.0  # Default starting price
+                if event_city:
+                    try:
+                        price_data = _calc_quote(event_city)
+                        if price_data.get("total"):
+                            price = float(price_data["total"])
+                    except Exception:
+                        pass  # Use default price if geocoding fails
+
+                qr = create_quote(
+                    client_name=name,
+                    event_type=lead.get("event_type", ""),
+                    event_date=lead.get("event_date", ""),
+                    event_location=event_city,
+                    guest_count=int(lead.get("guest_count") or 0),
+                    price=price,
+                    client_email=lead.get("email", ""),
+                    client_phone=lead.get("phone", ""),
+                    lead_id=lead_id,
+                )
+                if qr.get("ok"):
+                    quote_info = f"\nQuote: {qr['quote_number']} — ${qr.get('total', price):,.0f}"
+                    # Update lead with quote amount
+                    conn2 = sqlite3.connect(str(DB_PATH))
+                    conn2.execute(
+                        "UPDATE leads SET total_quote_amount=?, updated_at=? WHERE id=?",
+                        (qr.get("total", price), _now(), lead_id)
+                    )
+                    conn2.commit()
+                    conn2.close()
+                    # Advance pipeline to quote_sent
+                    ps.auto_transition_on_action(lead_id, "quote_sent")
+                    self._log_event(lead_id, "auto_quote_generated",
+                                    f"Quote {qr['quote_number']} auto-generated: ${qr.get('total', price):,.0f}")
+                    print(f"[Pipeline] ✅ Auto-generated quote {qr['quote_number']} for lead {lead_id}")
+            except Exception as e:
+                print(f"[Pipeline] ⚠️ Auto-quote generation failed for lead {lead_id}: {e}")
+
         # Informational Telegram notification (no approval buttons needed)
         await self._notify(
             f"NEW LEAD — Auto-contacted\n"
@@ -634,6 +712,7 @@ class LeadPipeline:
             f"Email: {lead.get('email', 'none')}\n"
             f"Source: {lead_source}\n"
             f"{'SMS + Email sent' if sent_any else 'No contact info — check manually'}"
+            f"{quote_info}"
         )
         await self._broadcast({"type": "lead_event", "event": "auto_contacted",
                                "lead_id": lead_id, "name": name})
