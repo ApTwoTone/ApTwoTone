@@ -1,51 +1,28 @@
 # Fable 5 worktree — file-level status
 
-Updated 2026-08-18 ~18:10 PT.
+Updated 2026-08-18 ~19:10 PT.
 
-Spark worktree: `/home/kai/Desktop/Project-Bunny-fable5-landing`  
-Branch: `fable5/wi-landing`  
-Base: `5c260ab2`
+**Shipped.** Spark `main` `43ecc294` is live as **v0.1.10** (`bunny deploy` run `20260819T014308Z-43ecc2947798`).
 
-## Modified (not committed on Spark)
+Isolated worktree `/home/kai/Desktop/Project-Bunny-fable5-landing` branch `fable5/wi-landing` was merged into `main` and is no longer the writer.
 
-- `bin/bunny_adjacent_enrichment_cycle.sh` — WI-1 canary + WI-9.7 generalized gate
-- `bin/bunny_health_probe.py` — 9.1 / 9.2 / 9.5 / 9.6 / 9.7
-- `bin/bunny_phone_retraction.py` — 9.6 adopt
-- `bin/bunny_publication_authority_audit.py` — 9.6 adopt
-- `bin/bunny_publish_all.py` — 9.6 adopt (publish loop + terminal-advance)
-- `bin/tests/test_adjacent_enrichment_cycle.py` — WI-1 + 9.7 tests
-- `bin/tests/test_bunny_health_owner_apn_due.py` — 9.1
-- `bin/tests/test_bunny_health_yield_vocabulary.py` — 9.2
-- `discovery/runtime/netr/la_stageb_bridge.py` — 9.6 (live on discovery cut)
-- `discovery/runtime/spark/apn_norm_bare_sweep.py` — 9.6 (live on discovery cut)
-- `discovery/spine/mint.py` — 9.6 (live on discovery cut)
-- `enrichment/apn/apn_retry.py` — WI-1 `record_lane_fault` + WI-5 clocks
-- `enrichment/apn/realist_owner_resolver.py` — WI-1
-- `enrichment/apn/resolution_ladder.py` — WI-5 PENDING keys 55/65/115
-- `enrichment/providers/bunny_provider_lane.py` — 9.7 (live on save once on `main`)
-- `runtime/enrichment/dossier_spine_writeback.py` — 9.6
-- `runtime/enrichment/live_nod/core/router.py` — WI-8 strand receipt
-- tests for Realist owner resolver / runner / private nod router
+## Commits that went live
 
-## New (not committed on Spark)
+- `4018467b` Fable-5 WI-1/5/8/9 landing
+- `5d9da8a2` merge of main (GIS timeout, intake CAS, TT runtime_generation, unreadable-grid pin)
+- `72bf01e2` pin enrichment companion hashes after that merge
+- `43ecc294` retarget `realist_unreadable_recorded_as_absence` mutant at the WI-1 `header_by_id` parse shape
 
-- `scripts/rearm_realist_owner_lane.py`
-- `enrichment/apn/second_source.py` + RAMOS/DOCTOLERO fixtures + `test_second_source_tiebreak.py`
-- `enrichment/apn/tests/test_realist_grid_read.py`
-- `enrichment/apn/tests/test_realist_lane_fault_isolation.py`
-- `enrichment/apn/tests/test_realist_owner_query_live_names.py`
-- `bin/tests/test_lane_canary_gate.py`
-- `bin/tests/test_bunny_health_served_adjudication.py`
-- `bin/tests/test_actor_attribution_adoption.py`
+First deploy of `72bf01e2` rolled back on golden gate (stale mutant anchor). Second deploy of `43ecc294` passed golden gate, waited out the in-flight NETR proof cycle, flipped, smoked.
 
-## Still waiting
+`BOARD_CONTRACT` stayed **1**. Mac app was relaunched, not rebuilt.
 
-1. WI-5 live rungs (TT roll-candidate confirm, Matrix History lift, NARRPR foreclosure).
-2. Register GATE_SUITES + MUTANTS in the same commit as the behavior.
-3. `scripts/regenerate_release_manifests.sh` for any ENR companion (`bunny_adjacent_enrichment_cycle.sh`).
-4. Other session releases Spark `main`.
-5. Merge worktree → `main`, then `python3 bin/bunny_deploy --plan` after 18:00 PT.
-6. Runtime waivers for `tt` / `matrix_pr` belong in live `data/enrichment-state/` at deploy time, not in git. Do not waive `realist_owner`.
+## Still waiting (not a deploy miss)
+
+1. WI-5 live TT / Matrix History / NARRPR rungs — provider day only.
+2. One metered Realist multi-result canary before that lane arms.
+3. This week’s remaining OWNER_APN / skip-trace work — 08:00 PT Wednesday.
+4. WI-11 corroboration — Carlos A/B/C.
 
 ## Refuse list (unchanged)
 

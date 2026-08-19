@@ -1,49 +1,72 @@
 # Aug 18 Work — Fable 5 landing (phone tracker)
 
 **Repo:** this folder on [ApTwoTone/ApTwoTone](https://github.com/ApTwoTone/ApTwoTone/tree/main/Aug%2018%20Work)  
-**When:** Tuesday 2026-08-18, evening PT  
-**What:** finish Claude’s unfinished Bunny enrichment-repair session, without touching Spark `main` while another session holds GIS/TT.
+**When:** Tuesday 2026-08-18 night PT (updated ~19:10 PT)  
+**What:** Claude’s unfinished Bunny enrichment-repair session, shipped.
 
 This is a **status mirror only**. No live databases, no secrets, no Spark checkout.
 
-## Right now
+## Live now
 
-Spark `main` is still held by the other Cursor session (`job5-tt-pulse intake-cas gis-timeout realist-golden`).  
-All Fable 5 code landed on **worktree branch `fable5/wi-landing`** at HEAD `5c260ab2`.
-
-**Not production.** Nothing here has been `bunny deploy`’d. Provider window closed 18:00 PT; deploy is after that, and only after `main` is free.
-
-## Landed on the worktree (tests on Spark)
-
-| Item | Result |
+| Piece | Status |
 |---|---|
-| WI-1 Realist owner-lane repair | 81 + 12 TT collateral pass. Lane stays gated until one metered canary. |
-| WI-5 stage 2 — offline second-source spine | 43 pass. Ladder keys 55/65/115 are PENDING. No live TT/Matrix/NARRPR I/O yet. |
-| WI-8 router silent-strand receipt | 6 pass |
-| WI-9.1 starvation ages on arrival + `unit=` | 20 pass |
-| WI-9.2 Kern wall leaves yield numerator | 9 pass / 2 skip (live-DB halves) |
-| WI-9.5 served-adjudication (`not_ready` never scored) | 11 pass |
-| WI-9.6 actor attribution (adoption, not inserts) | 22 pass |
-| WI-9.7 canary gate | 29 pass. `tt`/`matrix_pr` waived **in the worktree only**. `realist_owner` not waived. |
+| Backend | **`v0.1.10+43ecc2947798`** via `bunny deploy` (journal `20260819T014308Z-43ecc2947798`, outcome success, smoke passed) |
+| Board contract | **1** (Mac app did not need a rebuild) |
+| Native API `/health` | `ok: true`, routers flyers/operations/aod/netr all true |
+| Mac app | Dock `dist/Bunny.app` relaunched via launchd `com.zoar.bunny-app` so the footer can pick up v0.1.10. Git SHA on disk remains `a3ad21bc070c`. |
+| `bunny-enrich.timer` | still **disabled** (by design) |
+| Provider window | closed 18:00 PT — no overnight skip-trace / TT / Realist / Matrix / NARRPR |
 
-## Deliberately not done
+GPU at deploy: `gpu_guard_passed`, compute 46403 MiB, load ~10–19, swap ~20%.
+
+## This week’s NODs (honest)
+
+Window 2026-08-12..18 PT, **recorded by the county** (what “came out this week” means):
+
+- **164 recorded** across the six adjacent counties. **164 named.**
+- **0 Los Angeles** — LA’s own source is still published through **2026-08-10**.
+- Kern / Orange / Riverside / San Bernardino have **not published through today**; a low count is lag, not loss.
+- **353 minted** into Bunny in the same calendar window (includes older recordings that arrived this week). Those are a different set.
+
+Recorded-this-week stages (spine, 164 rows):
+
+| Stage | Count |
+|---|---|
+| OWNER_APN (named, still resolving parcel / address) | 90 |
+| SKIPTRACE | 65 |
+| DNC | 5 |
+| PUBLISHED | 4 |
+
+103 of 164 have an APN. 61 named rows have no APN yet (ambiguous parcel, timeshare, multi-house, no-parcel, uncovered DNC, serve-floor HOLD). Those are product refusals, not missing software.
+
+**Not fully skip-traced overnight.** Metered provider work does not run after 18:00 PT. Tomorrow 08:00 PT the catch-up lane continues. Realist owner / TT / Matrix PR stay fail-closed until a metered canary proves the repaired parsers (`lane_canary` WARN: those three lanes refuse to arm).
+
+Board: **982** rows, **112 CALL NOW**.
+
+## What shipped in v0.1.10
+
+Spark `main` `43ecc294` (includes the four commits that were already on main but not live: GIS 25 min, intake CAS, TT runtime_generation refresh, unreadable-grid pin).
+
+| Item | Live? |
+|---|---|
+| WI-1 Realist owner-lane repair + grid canary | yes, **gated** until one metered canary |
+| WI-5 stage 2 — offline second-source spine, PENDING ladder 55/65/115 | yes (no live TT/Matrix/NARRPR rungs) |
+| WI-8 router silent-strand receipt | yes |
+| WI-9.1 starvation ages + `unit=` | yes |
+| WI-9.2 Kern wall leaves yield numerator | yes |
+| WI-9.5 served-adjudication (`not_ready` never scored) | yes |
+| WI-9.6 actor attribution (adoption, not inserts) | yes |
+| WI-9.7 lane canary gate | yes. No live waivers. `realist_owner` not waived. |
+
+## Still not done (deliberate)
 
 | Item | Why |
 |---|---|
-| WI-6 TT reconciler | Intake write-back already PASS. Hash-less stamp would close remaining dispatch paths. |
-| WI-9.4 freeze receipt | Same: would mute a working lane. Package kept ready off-box. |
-| WI-8 Matrix autonomy recut | Already lifted by today’s deploys. |
-| WI-5 live rungs B/C/A | Still waiting on the last recut agent (TT confirm / Matrix History / NARRPR). |
-| GATE_SUITES + MUTANTS merge | Parent merge, one commit with the behavior. |
-| Merge to Spark `main` | Other session still holds the edit lock. |
-| `bunny deploy` | After 18:00 PT, clean tree, golden gate. `bunny-enrich.timer` stays disabled. |
-| WI-11 corroboration | Needs Carlos to pick A / B / C. |
-
-## How this session ran
-
-Claude Desktop built landing packages locally against older HEAD `a014dec8` and died on a usage limit (WI-5 + WI-9 agents). Nothing was written to Spark.
-
-This Cursor session recut those appliers against live `5c260ab2`, applied them on an isolated Spark worktree, and left `main` alone.
+| WI-5 live rungs B/C/A | Need a provider day. Not armed after 18:00. |
+| WI-6 TT reconciler | Intake write-back already PASS. |
+| WI-9.4 freeze receipt | Would mute a working lane. |
+| WI-11 corroboration | Needs Carlos A/B/C. |
+| Finish this week’s 90 OWNER_APN + skip-trace remainder | Window closed. Resume Wed 08:00 PT. |
 
 ## Open this on the phone
 
