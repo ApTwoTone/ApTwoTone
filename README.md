@@ -8,6 +8,7 @@ This public repo is a sanitized mirror of the Nexus code surface so restricted C
 - `nexus-network/` — Next.js dashboard and Tauri desktop shell
 - `zoar-website/` — website code
 - `nexus-workspace.code-workspace` — VS Code multi-root workspace entrypoint
+- `Aug 18 Work/` — 2026-08-18 Fable 5 / Bunny landing status (phone tracker; no live data)
 
 ## Intentionally Not Included
 
